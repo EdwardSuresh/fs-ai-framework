@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FS-AI Framework — Standout Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafaf8; --panel:#ffffff; --panel-2:#f3f4f1;
+    --ink:#1d2530; --muted:#5d6770; --line:#dcdfd9;
+    --gold:#9a7420;   --gold-bg:#faf3e2;   --gold-line:#d9c184;
+    --crim:#a8402f;   --crim-bg:#faeae6;   --crim-line:#dba293;
+    --teal:#1f7d72;   --teal-bg:#e5f3f1;   --teal-line:#8fc7c0;
+    --steel:#3f63a0;  --steel-bg:#e9eef7;  --steel-line:#a5b9d8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;padding:34px 16px 64px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-align:center}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(24px,3.8vw,38px);text-align:center;margin:10px 0 8px;color:#171e28}
+  .subtitle{text-align:center;color:var(--muted);font-size:15px;max-width:820px;margin:0 auto 24px}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px}
+  .tab-btn{font-weight:600;font-size:13.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 15px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+  .tab-btn:hover{color:var(--ink);border-color:#b9bdb4}
+  .tab-btn.active{color:#fff;background:#1d2530;border-color:#1d2530}
+  .tab-btn:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+  .panel{display:none;animation:fade .25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+  .phase-head{display:flex;align-items:center;gap:12px;margin:6px 0 12px;flex-wrap:wrap}
+  .phase-head .dot{width:12px;height:12px;border-radius:3px}
+  .phase-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+  .phase-head .range{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .phase-intro{color:var(--muted);font-size:14.5px;margin-bottom:20px;max-width:840px}
+
+  .callout{border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--line);background:var(--panel)}
+  .callout h4{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:var(--gold)}
+  .callout p{font-size:14px;color:#3a434c}
+  .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:16px}
+
+  /* moves strip */
+  .moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+  .move{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel)}
+  .move b{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--crim);display:block;margin-bottom:5px}
+  .move h6{font-family:'Fraunces',serif;font-size:15.5px;margin-bottom:5px}
+  .move p{font-size:13px;color:#3a434c}
+
+  /* field notes */
+  .fn-group{margin-bottom:22px}
+  .fn{border:1px solid var(--line);border-left-width:4px;border-radius:10px;background:var(--panel);padding:13px 16px;margin-bottom:10px}
+  .fn .fn-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:5px}
+  .fn .ref{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px}
+  .fn h5{font-family:'Fraunces',serif;font-size:14.5px;font-weight:700}
+  .fn p{font-size:13.4px;color:#3a434c}
+  .fn p b{color:var(--ink)}
+  .fn-gold{border-left-color:var(--gold)} .fn-gold .ref{color:var(--gold)}
+  .fn-crim{border-left-color:var(--crim)} .fn-crim .ref{color:var(--crim)}
+  .fn-teal{border-left-color:var(--teal)} .fn-teal .ref{color:var(--teal)}
+  .fn-steel{border-left-color:var(--steel)} .fn-steel .ref{color:var(--steel)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.2px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel-2)}
+  tr:last-child td{border-bottom:none}
+  td.ref{font-family:'JetBrains Mono',monospace;font-weight:600;white-space:nowrap;color:var(--gold)}
+  td .name{font-weight:600;color:var(--ink);display:block;font-size:12.5px;margin-bottom:2px}
+
+  /* anti-patterns */
+  .ap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .ap{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:15px 17px}
+  .ap .apn{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--crim);display:block;margin-bottom:5px}
+  .ap h5{font-family:'Fraunces',serif;font-size:16px;font-weight:700;margin-bottom:6px}
+  .ap p{font-size:13px;color:#3a434c;margin-bottom:7px}
+  .ap .kill{font-size:12px;padding-top:7px;border-top:1px dashed var(--line);color:var(--muted)}
+  .ap .kill b{color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px}
+  .ap .warn{font-size:12.3px;color:#7a4a12;background:var(--gold-bg);border-radius:7px;padding:6px 9px;margin-bottom:7px}
+
+  .svg-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;overflow-x:auto;margin:18px 0}
+  .svg-wrap h5{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:10px}
+  .footnote{font-size:12.5px;color:var(--muted);margin-top:22px;padding-top:14px;border-top:1px dashed var(--line)}
+  .quote{margin-top:30px;text-align:center;font-family:'Fraunces',serif;font-size:clamp(15px,2.2vw,19px);font-weight:600;color:#2a3340;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .quote span{color:var(--crim)}
+  svg text{font-family:'Inter',sans-serif}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">FS-AI Framework · Standout Edition</div>
+  <h1>The Financial-Services Implementation Layer<br>for AI Governance</h1>
+  <p class="subtitle">Fourteen principles and a reference architecture, made distinctive by four deliberate moves: field notes from practice, hardened regulatory citations, a crosswalk to NIST · ISO 42001 · EU AI Act, and a named anti-pattern gallery. Companion to FS-AI-PRIN-CAT-001 and FS-AI-RA-001.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="position" role="tab">Why It Stands Out</button>
+    <button class="tab-btn" data-tab="notes" role="tab">Move 1 · Field Notes</button>
+    <button class="tab-btn" data-tab="anchors" role="tab">Move 2 · Regulatory Anchors</button>
+    <button class="tab-btn" data-tab="crosswalk" role="tab">Move 3 · Standards Crosswalk</button>
+    <button class="tab-btn" data-tab="antipatterns" role="tab">Move 4 · Anti-Pattern Gallery</button>
+  </div>
+
+  <!-- ============ POSITIONING ============ -->
+  <section id="position" class="panel active">
+    <div class="two-col">
+      <div class="callout">
+        <h4>The gap this framework occupies</h4>
+        <p>Standards bodies define <b>what</b> to care about. Regulators define <b>obligations</b>. Vendors define <b>what to buy</b>. Almost nothing public defines <b>how an Architecture Review Board actually gates AI in a financial institution</b> — which evidence to demand, where controls physically live, and what the failure looks like when they don't. This framework lives in that gap: it is not another set of values; it is the implementation layer.</p>
+      </div>
+      <div class="callout">
+        <h4>Not a competitor — a translator</h4>
+        <p>NIST AI RMF, ISO/IEC 42001, and the EU AI Act are this framework's <b>validation, not its rivals</b>. The crosswalk (Move 3) maps every FS-AI principle onto all three, positioning the catalog as the financial-services-specific way to satisfy them. An institution adopting FS-AI inherits a defensible story against the major frameworks rather than a parallel one.</p>
+      </div>
+    </div>
+
+    <div class="svg-wrap">
+      <h5>Positioning — where FS-AI sits in the stack</h5>
+      <svg viewBox="0 0 1000 300" width="100%" role="img" aria-label="Positioning diagram: standards and regulation at top, FS-AI implementation layer in middle, institution solutions at bottom">
+        <defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5d6770"/></marker></defs>
+        <rect x="40" y="20" width="920" height="62" rx="12" fill="#e9eef7" stroke="#a5b9d8"/>
+        <text x="500" y="46" text-anchor="middle" fill="#3f63a0" font-weight="700" font-size="14">WHAT &amp; WHY — Standards &amp; Regulation</text>
+        <text x="500" y="68" text-anchor="middle" fill="#5d6770" font-size="12">NIST AI RMF · ISO/IEC 42001 · EU AI Act · SR 11-7 · FINRA · NAIC · State Insurance Law</text>
+
+        <rect x="40" y="118" width="920" height="72" rx="12" fill="#faf3e2" stroke="#9a7420" stroke-width="1.8"/>
+        <text x="500" y="146" text-anchor="middle" fill="#9a7420" font-weight="700" font-size="14.5">HOW — FS-AI Framework (this work)</text>
+        <text x="500" y="168" text-anchor="middle" fill="#5d6770" font-size="12">14 principles in TOGAF form · reference architecture · traceability to ARB evidence · field notes · anti-patterns</text>
+
+        <rect x="40" y="226" width="920" height="58" rx="12" fill="#e5f3f1" stroke="#8fc7c0"/>
+        <text x="500" y="250" text-anchor="middle" fill="#1f7d72" font-weight="700" font-size="14">BUILD — Institution Solutions</text>
+        <text x="500" y="270" text-anchor="middle" fill="#5d6770" font-size="12">Advisor assistants · trading analytics · underwriting &amp; claims AI — conformant by construction</text>
+
+        <line x1="500" y1="82" x2="500" y2="114" stroke="#5d6770" stroke-width="1.6" marker-end="url(#pa)"/>
+        <line x1="500" y1="190" x2="500" y2="222" stroke="#5d6770" stroke-width="1.6" marker-end="url(#pa)"/>
+        <text x="700" y="103" fill="#5d6770" font-size="11">obligations translated into architecture</text>
+        <text x="690" y="211" fill="#5d6770" font-size="11">architecture inherited by every project</text>
+      </svg>
+    </div>
+
+    <div class="moves">
+      <div class="move"><b>Move 1</b><h6>Field Notes</h6><p>Every principle carries the failure it was written to prevent — practice scar tissue no standards body publishes and no generic framework can fake.</p></div>
+      <div class="move"><b>Move 2</b><h6>Hardened Anchors</h6><p>Style-references upgraded to actual citations — SR 11-7, 17 CFR 240.17a-4, Reg B §1002.9, NAIC 2023 bulletin, NY DFS Circular No. 7 — the difference between credible and dismissible for a compliance-literate reader.</p></div>
+      <div class="move"><b>Move 3</b><h6>Standards Crosswalk</h6><p>FS-AI-01–14 mapped to NIST AI RMF functions, ISO/IEC 42001 clauses, and EU AI Act articles — the judo move that turns the crowded field into validation.</p></div>
+      <div class="move"><b>Move 4</b><h6>Named Anti-Patterns</h6><p>Nine sticky, opinionated failure names — "The Silent Vendor Update," "The Proxy in the Data" — because frameworks are remembered by their opinions, not their checklists.</p></div>
+    </div>
+
+    <div class="quote">"Everyone publishes what AI should be. This publishes what the ARB asks for, where the control lives, and <span>what it looks like when it's missing.</span>"</div>
+  </section>
+
+  <!-- ============ FIELD NOTES ============ -->
+  <section id="notes" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--crim)"></span><h2>Field Notes — the failure each principle prevents</h2><span class="range">3 published · 14 in the full edition</span></div>
+    <p class="phase-intro">Each note is an anonymized composite of failure patterns observed across the industry, written to be personalized: replace or augment these with your own ARB and program experience before publication — that substitution is precisely what makes the framework yours.</p>
+
+    <div class="fn-group">
+      <div class="fn fn-crim"><div class="fn-head"><span class="ref">FS-AI-06</span><h5>The reconstruction that failed</h5></div><p>An exam requested reconstruction of twelve recommendations from fourteen months prior. The model had been upgraded twice and nobody pinned versions; the firm could show outputs but not reasons. <b>Lesson:</b> lineage is cheap daily and impossible retroactively.</p></div>
+      <div class="fn fn-crim"><div class="fn-head"><span class="ref">FS-AI-07</span><h5>The beautiful score</h5></div><p>A third-party "lifestyle score" was the best-performing underwriting feature — because it tracked geographic patterns that mapped to protected class. <b>Lesson:</b> proxies hide inside the best features; vendor data must be decomposable or it must be out.</p></div>
+      <div class="fn fn-teal"><div class="fn-head"><span class="ref">FS-AI-11</span><h5>The upgrade nobody ordered</h5></div><p>A vendor's silent model upgrade changed the tone and risk language of thousands of advisor drafts overnight; it took nine days to notice. <b>Lesson:</b> version pinning is a control, not a preference — and vendor contracts must make it possible.</p></div>
+    </div>
+    <div class="callout"><h4>Eleven more field notes</h4><p>One field note accompanies every principle in the full edition — fourteen failure patterns in total, <b>available on request</b>. Three are published here; more appear as a weekly series on LinkedIn.</p></div>
+  </section>
+
+  <!-- ============ ANCHORS ============ -->
+  <section id="anchors" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--gold)"></span><h2>Hardened Regulatory Anchors</h2><span class="range">Citation-level · per principle</span></div>
+    <p class="phase-intro">Style-references replaced with specific instruments. Applicability varies by charter, activity, and jurisdiction — confirm with Compliance and Legal before adoption; this is general information, not legal advice.</p>
+    <table>
+      <thead><tr><th style="width:90px">Principle</th><th>Primary US anchors</th><th>EU / international &amp; state</th></tr></thead>
+      <tbody>
+        <tr><td class="ref">FS-AI-01</td><td>Fed SR 11-7 / OCC Bulletin 2011-12 (governance &amp; roles in model risk); NAIC Model Bulletin on Use of AI Systems by Insurers (Dec 2023) — governance program expectations</td><td>EU AI Act (Reg. (EU) 2024/1689) Art. 26 deployer obligations; ISO/IEC 42001 leadership clauses</td></tr>
+        <tr><td class="ref">FS-AI-02</td><td>Regulation Best Interest, 17 CFR 240.15l-1; Investment Advisers Act fiduciary duty (§206); FINRA Rules 2210 &amp; 3110; state insurance producer licensing laws</td><td>EU AI Act Art. 14 (human oversight); MiFID II suitability provisions</td></tr>
+        <tr><td class="ref">FS-AI-03</td><td>ECOA / Regulation B, 12 CFR 1002.9 (adverse action notices); FCRA §615; state unfair claims settlement practices acts</td><td>NY DFS Insurance Circular Letter No. 7 (2024); EU AI Act Art. 13 &amp; Art. 86 (transparency, explanation of individual decisions)</td></tr>
+        <tr><td class="ref">FS-AI-04</td><td>Reg BI Care Obligation; Advisers Act §206 antifraud; NAIC Unfair Trade Practices &amp; Unfair Claims Settlement Practices model acts</td><td>EU AI Act Annex III high-risk uses (creditworthiness; life/health insurance pricing)</td></tr>
+        <tr><td class="ref">FS-AI-05</td><td>SR 11-7 / OCC 2011-12 (model definition, validation, tiering); Interagency Guidance on Third-Party Relationships (2023); NAIC 2023 bulletin</td><td>EU AI Act Art. 9 (risk management) &amp; Art. 17 (quality management system); ISO/IEC 42001 operation clauses</td></tr>
+        <tr><td class="ref">FS-AI-06</td><td>SEA Rule 17a-4 (17 CFR 240.17a-4); FINRA Rule 4511; Advisers Act Rule 204-2; market conduct exam claim-file standards</td><td>EU AI Act Art. 12 (record-keeping) &amp; Art. 19 (logs); DORA ICT incident records</td></tr>
+        <tr><td class="ref">FS-AI-07</td><td>ECOA / Reg B; Colorado SB 21-169 and DOI Reg 10-1-1 (life insurance ECDIS testing); NAIC 2023 bulletin</td><td>NY DFS Circular Letter No. 7 (2024); EU AI Act Art. 10 (data governance &amp; bias examination)</td></tr>
+        <tr><td class="ref">FS-AI-08</td><td>FINRA Rule 3110 (supervision) &amp; 3120 (supervisory control systems); FINRA Rule 2210 (communications); SEC examination priorities on AI use</td><td>EU AI Act Art. 43 (conformity assessment); ISO/IEC 42001 planning &amp; operation clauses</td></tr>
+        <tr><td class="ref">FS-AI-09</td><td>GLBA Title V; Regulation S-P (17 CFR Part 248); Exchange Act §15(g) &amp; Rule 10b-5 (MNPI controls)</td><td>GDPR (where applicable); EU AI Act Art. 10; cross-border data residency regimes</td></tr>
+        <tr><td class="ref">FS-AI-10</td><td>FINRA Rule 2210 (fair, balanced, not misleading); Securities Act §17(a) / Rule 10b-5 antifraud; state UDAP statutes</td><td>EU AI Act Art. 15 (accuracy &amp; robustness); unfair commercial practices directives</td></tr>
+        <tr><td class="ref">FS-AI-11</td><td>SR 11-7 change-control expectations; SOX 404 IT general controls (where applicable); Interagency TPRM guidance (vendor change notice)</td><td>EU AI Act Art. 17 (QMS) &amp; Art. 72 (post-market monitoring); ISO/IEC 42001 change provisions</td></tr>
+        <tr><td class="ref">FS-AI-12</td><td>FFIEC Business Continuity Management; NAIC claims timeliness standards; OCC operational resilience guidance</td><td>DORA (Reg. (EU) 2022/2554); EU AI Act Art. 14 &amp; 15 (oversight, robustness)</td></tr>
+        <tr><td class="ref">FS-AI-13</td><td>SEC Rule 15c3-5 (Market Access); Exchange Act §9(a) &amp; §10(b) (manipulation); FINRA 3110/3120 supervision of algo activity</td><td>MiFID II RTS 6 (algo trading controls, kill functionality); EU Market Abuse Regulation</td></tr>
+        <tr><td class="ref">FS-AI-14</td><td>SR 11-7 ongoing monitoring expectations; NAIC 2023 bulletin (ongoing testing); OCC model risk exam procedures</td><td>EU AI Act Art. 72 (post-market monitoring); ISO/IEC 42001 performance evaluation &amp; improvement clauses</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote"><b>Verification status:</b> citations reflect instruments as known through early 2026 and are provided for derivation transparency. Confirm current text, amendments, and applicability with Compliance and Legal per jurisdiction and charter before relying on them in a governed artifact.</p>
+  </section>
+
+  <!-- ============ CROSSWALK ============ -->
+  <section id="crosswalk" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--steel)"></span><h2>Standards Crosswalk</h2><span class="range">FS-AI ↔ NIST AI RMF ↔ ISO/IEC 42001 ↔ EU AI Act</span></div>
+    <p class="phase-intro">The positioning move: FS-AI is the financial-services implementation layer of the major frameworks. An institution that satisfies an FS-AI principle generates evidence reusable against all three columns. Mappings are at function/clause/article level; refine to subcategory level during formal adoption.</p>
+    <table>
+      <thead><tr><th style="width:170px">FS-AI Principle</th><th>NIST AI RMF 1.0</th><th>ISO/IEC 42001:2023</th><th>EU AI Act (2024/1689)</th></tr></thead>
+      <tbody>
+        <tr><td class="ref">FS-AI-01<span class="name">Accountable Ownership</span></td><td>GOVERN — accountability structures, roles &amp; responsibilities</td><td>Cl. 5 Leadership; Annex A internal organization / roles controls</td><td>Art. 26 deployer obligations</td></tr>
+        <tr><td class="ref">FS-AI-02<span class="name">Licensed Advice Boundary</span></td><td>GOVERN / MANAGE — human oversight policy</td><td>Annex A controls on AI system use &amp; oversight of impact</td><td>Art. 14 human oversight</td></tr>
+        <tr><td class="ref">FS-AI-03<span class="name">Explainability ∝ Impact</span></td><td>MEASURE — explainability &amp; interpretability of trustworthy AI</td><td>Annex A information for interested parties</td><td>Art. 13 transparency; Art. 86 explanation of individual decisions</td></tr>
+        <tr><td class="ref">FS-AI-04<span class="name">Best Interest by Design</span></td><td>MAP — context, intended purpose &amp; impact framing</td><td>Cl. 6 Planning; AI impact assessment controls</td><td>Annex III high-risk classification (credit; life/health insurance pricing)</td></tr>
+        <tr><td class="ref">FS-AI-05<span class="name">MRM for All AI</span></td><td>MAP — categorization; MEASURE — risk evaluation</td><td>Cl. 8 Operation; AI system lifecycle controls</td><td>Art. 9 risk management; Art. 17 QMS</td></tr>
+        <tr><td class="ref">FS-AI-06<span class="name">Regulatory Traceability</span></td><td>GOVERN / MANAGE — documentation &amp; transparency of provenance</td><td>Cl. 7 Support (documented information)</td><td>Art. 12 record-keeping; Art. 19 automatically generated logs</td></tr>
+        <tr><td class="ref">FS-AI-07<span class="name">Fairness Testing</span></td><td>MEASURE — fairness &amp; harmful-bias evaluation</td><td>Annex A data quality &amp; impact assessment controls</td><td>Art. 10 data governance (bias examination &amp; mitigation)</td></tr>
+        <tr><td class="ref">FS-AI-08<span class="name">Gates Precede Capability</span></td><td>GOVERN — policies, procedures &amp; risk tolerances before deployment</td><td>Cl. 6 Planning; Cl. 8 Operation (release criteria)</td><td>Art. 43 conformity assessment</td></tr>
+        <tr><td class="ref">FS-AI-09<span class="name">Data Sovereignty</span></td><td>MAP / MANAGE — data provenance &amp; third-party risk</td><td>Annex A data management &amp; third-party relationship controls</td><td>Art. 10 data governance (with GDPR adjacency)</td></tr>
+        <tr><td class="ref">FS-AI-10<span class="name">Grounded Knowledge Only</span></td><td>MEASURE — validity &amp; reliability of outputs</td><td>Annex A AI system lifecycle (verification &amp; validation)</td><td>Art. 15 accuracy &amp; robustness</td></tr>
+        <tr><td class="ref">FS-AI-11<span class="name">Change Control</span></td><td>MANAGE — documented change &amp; configuration management</td><td>Cl. 8 Operation; Cl. 10 Improvement</td><td>Art. 17 QMS; Art. 72 post-market monitoring (substantial modification)</td></tr>
+        <tr><td class="ref">FS-AI-12<span class="name">Fail to Safe / Human</span></td><td>MANAGE — incident response &amp; fallback planning</td><td>Annex A controls on AI system operation &amp; monitoring</td><td>Art. 14 human oversight; Art. 15 robustness &amp; resilience</td></tr>
+        <tr><td class="ref">FS-AI-13<span class="name">Market Integrity Limits</span></td><td>MANAGE — risk treatment for high-autonomy contexts</td><td>Annex A use-of-AI controls (boundaries of use)</td><td>Sector lex specialis: MiFID II RTS 6; EU MAR (AI Act Art. 9 risk mgmt applies)</td></tr>
+        <tr><td class="ref">FS-AI-14<span class="name">Monitoring &amp; Drift</span></td><td>MEASURE / MANAGE — ongoing monitoring &amp; response</td><td>Cl. 9 Performance evaluation; Cl. 10 Improvement</td><td>Art. 72 post-market monitoring</td></tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:16px">
+      <h4>How to use the crosswalk</h4>
+      <p>Three audiences, one table. <b>For an ARB:</b> evidence collected for an FS-AI gate doubles as NIST/ISO/AI-Act evidence — one control set, three defensible stories. <b>For a hiring panel:</b> it demonstrates fluency across the frameworks they already know. <b>For publication:</b> it positions the catalog as complementary infrastructure, which earns links and citations instead of competition.</p>
+    </div>
+  </section>
+
+  <!-- ============ ANTI-PATTERNS ============ -->
+  <section id="antipatterns" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--crim)"></span><h2>Anti-Pattern Gallery</h2><span class="range">Nine named failures · the memorable layer</span></div>
+    <p class="phase-intro">Frameworks are remembered by their opinions. Each anti-pattern has a name, a shape, an early-warning phrase you'll hear in meetings, and the principle that kills it.</p>
+    <div class="ap-grid">
+      <div class="ap"><span class="apn">Anti-Pattern 01</span><h5>Demo-to-Production Drift</h5><p>A pilot quietly becomes production. The gates never fire because the system never officially "launched."</p><div class="warn">⚠ You'll hear: "We'll formalize it next quarter."</div><div class="kill">Killed by <b>FS-AI-08</b> — gates precede capability, and pilots have expiry dates.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 02</span><h5>The Unowned Model</h5><p>A model survives two reorgs with no living owner. It keeps making decisions; nobody can answer for them.</p><div class="warn">⚠ You'll hear: "I think that was Priya's team's model?"</div><div class="kill">Killed by <b>FS-AI-01</b> — ownership attestation; orphaned models are restricted on sight.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 03</span><h5>The Silent Vendor Update</h5><p>An upstream foundation-model upgrade changes the behavior of every dependent workflow overnight, unannounced.</p><div class="warn">⚠ You'll hear: "The vendor handles all that."</div><div class="kill">Killed by <b>FS-AI-11</b> — pinned versions, update notice clauses, regression suites.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 04</span><h5>The Helpful Hallucination</h5><p>Fluent, confident, wrong — and client-facing. The bot invents coverage, performance, or tax treatment.</p><div class="warn">⚠ You'll hear: "It's usually right."</div><div class="kill">Killed by <b>FS-AI-10</b> — grounded sources, citations, hallucination testing in validation.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 05</span><h5>The Proxy in the Data</h5><p>The best-performing feature is a third-party score nobody can decompose — and it's tracking protected class.</p><div class="warn">⚠ You'll hear: "We don't even use demographic data."</div><div class="kill">Killed by <b>FS-AI-07</b> — proxy review of all inputs, vendor data included.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 06</span><h5>The Shadow Prompt</h5><p>Client data flows into public chatbots through individual productivity habits, one helpful paste at a time.</p><div class="warn">⚠ You'll hear: "I just use it for formatting."</div><div class="kill">Killed by <b>FS-AI-09</b> — approved-service catalog plus DLP on AI endpoints.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 07</span><h5>The Black-Box Denial</h5><p>An adverse decision with no articulable reason. The adverse-action letter says everything and nothing.</p><div class="warn">⚠ You'll hear: "The model is too complex to explain."</div><div class="kill">Killed by <b>FS-AI-03</b> — reason codes by design, or the model isn't used for that decision.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 08</span><h5>The Margin-Maximizing Recommender</h5><p>"Best interest" implemented as a filter on top of an engine that optimizes the firm's revenue underneath.</p><div class="warn">⚠ You'll hear: "Compliance reviews the output anyway."</div><div class="kill">Killed by <b>FS-AI-04</b> — the constraint lives inside the objective function.</div></div>
+      <div class="ap"><span class="apn">Anti-Pattern 09</span><h5>The Hard Stop</h5><p>No degraded mode. When the AI stops, the workflow either halts completely or silently drops work on the floor.</p><div class="warn">⚠ You'll hear: "Fallback? We page IT."</div><div class="kill">Killed by <b>FS-AI-12</b> — designed degraded modes, drilled like fire alarms.</div></div>
+    </div>
+
+    <div class="quote">"Checklists get filed. <span>Named failures get remembered</span> — and repeated back to you in meetings, which is how a framework spreads."</div>
+  </section>
+
+</div>
+<script>
+  const btns=document.querySelectorAll('.tab-btn'),panels=document.querySelectorAll('.panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+  }));
+</script>
+</body>
+</html>

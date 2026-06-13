@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Architecture Principles — Capital Markets, Wealth Management &amp; Insurance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101418; --panel:#171c22; --panel-2:#13171c;
+    --ink:#ecefe9; --muted:#98a2a8; --line:#2a3138;
+    --gold:#d4a843;   --gold-bg:#241c0d;   --gold-line:#6e5a26;
+    --crim:#d4685e;   --crim-bg:#26130f;   --crim-line:#73362e;
+    --teal:#4fb3a9;   --teal-bg:#0e2220;   --teal-line:#2b5f59;
+    --steel:#7e9cc9;  --steel-bg:#141c2a;  --steel-line:#3c4f70;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;padding:32px 16px 64px}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-align:center}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(25px,4vw,40px);text-align:center;margin:10px 0 8px;letter-spacing:.01em}
+  .subtitle{text-align:center;color:var(--muted);font-size:15px;max-width:780px;margin:0 auto 22px}
+
+  .doc-control{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:26px}
+  .doc-control div{background:var(--panel-2);padding:10px 14px}
+  .doc-control b{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .doc-control span{font-size:13px}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:26px}
+  .tab-btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 15px;cursor:pointer;transition:all .15s}
+  .tab-btn:hover{color:var(--ink);border-color:#46525c}
+  .tab-btn.active{color:#101418;background:var(--gold);border-color:var(--gold)}
+  .tab-btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .panel{display:none;animation:fade .25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
+
+  .phase-head{display:flex;align-items:center;gap:12px;margin:6px 0 12px;flex-wrap:wrap}
+  .phase-head .dot{width:12px;height:12px;border-radius:3px}
+  .phase-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+  .phase-head .range{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .phase-intro{color:var(--muted);font-size:14.5px;margin-bottom:20px;max-width:800px}
+
+  /* TOGAF principle card */
+  .tprin{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px;background:var(--panel)}
+  .tprin-head{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .tprin-head .ref{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px;padding:3px 10px;border-radius:6px}
+  .tprin-head h3{font-family:'Fraunces',serif;font-size:17px;font-weight:700;flex:1}
+  .tprin-head .sectors{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+  .tprin-body{display:grid;grid-template-columns:148px 1fr}
+  .tprin-body > div{padding:12px 18px;border-bottom:1px solid var(--line)}
+  .tprin-body > div:nth-last-child(-n+2){border-bottom:none}
+  .tprin-body .lbl{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);background:var(--panel-2)}
+  .tprin-body .val{font-size:13.8px;color:#c8cdc9}
+  .tprin-body .val ul{margin-left:18px;display:grid;gap:5px}
+  .tprin-body .val li::marker{color:var(--muted)}
+  .tprin-body .val .ex b{color:var(--ink)}
+  .tprin-body .val.anchors{font-size:12.5px;color:var(--muted)}
+  @media (max-width:640px){.tprin-body{grid-template-columns:1fr}.tprin-body .lbl{border-bottom:none;padding-bottom:2px}}
+
+  .b-gold .tprin-head{background:var(--gold-bg)} .b-gold .ref{background:rgba(212,168,67,.16);color:var(--gold)} .b-gold h3{color:#ecd391} .b-gold{border-color:var(--gold-line)}
+  .b-crim .tprin-head{background:var(--crim-bg)} .b-crim .ref{background:rgba(212,104,94,.16);color:var(--crim)} .b-crim h3{color:#efb0a8} .b-crim{border-color:var(--crim-line)}
+  .b-teal .tprin-head{background:var(--teal-bg)} .b-teal .ref{background:rgba(79,179,169,.16);color:var(--teal)} .b-teal h3{color:#a4ddd6} .b-teal{border-color:var(--teal-line)}
+  .b-steel .tprin-head{background:var(--steel-bg)} .b-steel .ref{background:rgba(126,156,201,.16);color:var(--steel)} .b-steel h3{color:#bccde8} .b-steel{border-color:var(--steel-line)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  td.ref{font-family:'JetBrains Mono',monospace;font-weight:600;white-space:nowrap}
+  td.c{text-align:center}
+  .pill{display:inline-block;font-size:11px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:5px;white-space:nowrap}
+  .p-gold{background:rgba(212,168,67,.16);color:var(--gold)} .p-crim{background:rgba(212,104,94,.16);color:var(--crim)}
+  .p-teal{background:rgba(79,179,169,.16);color:var(--teal)} .p-steel{background:rgba(126,156,201,.16);color:var(--steel)}
+  .dotmark{color:var(--gold)}
+
+  .callout{border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--line);background:var(--panel-2)}
+  .callout h4{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:var(--gold)}
+  .callout p{font-size:14px;color:#c8cdc9}
+  .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:16px}
+  .svg-wrap{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:18px;overflow-x:auto;margin:18px 0}
+  .svg-wrap h5{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:10px}
+  .footnote{font-size:12.5px;color:var(--muted);margin-top:22px;padding-top:14px;border-top:1px dashed var(--line)}
+  .quote{margin-top:30px;text-align:center;font-family:'Fraunces',serif;font-size:clamp(15px,2.2vw,20px);font-weight:600;color:#efe6d2;padding:20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#1b2026,#13171c)}
+  .quote span{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Original Work · Derived from Sector Obligations</div>
+  <h1>AI Architecture Principles for<br>Capital Markets, Wealth Management &amp; Insurance</h1>
+  <p class="subtitle">Fourteen principles across four domains — Trust &amp; Accountability, Risk &amp; Compliance, Data &amp; Model Integrity, and Resilience &amp; Market Integrity — each documented in the TOGAF Architecture Principles template and derived from the regulatory and risk realities of regulated financial services.</p>
+
+  <div class="doc-control">
+    <div><b>Artifact</b><span>Principles Catalog</span></div>
+    <div><b>Reference</b><span>FS-AI-PRIN-CAT-001</span></div>
+    <div><b>Sectors</b><span>CM · WM · INS</span></div>
+    <div><b>Status</b><span>Public Edition v1.1</span></div>
+    <div><b>Owner</b><span>Enterprise Architecture</span></div>
+    <div><b>Date</b><span>June 2026</span></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="catalog" role="tab">Catalog &amp; Derivation</button>
+    <button class="tab-btn" data-tab="trust" role="tab">Trust &amp; Accountability · 01–04</button>
+    <button class="tab-btn" data-tab="risk" role="tab">Risk &amp; Compliance · 05–08</button>
+    <button class="tab-btn" data-tab="data" role="tab">Data &amp; Model Integrity · 09–11</button>
+    <button class="tab-btn" data-tab="resilience" role="tab">Resilience &amp; Market Integrity · 12–14</button>
+    <button class="tab-btn" data-tab="apply" role="tab">Governance &amp; Application</button>
+  </div>
+
+  <!-- ============ CATALOG ============ -->
+  <section id="catalog" class="panel active">
+    <div class="two-col">
+      <div class="callout">
+        <h4>How these principles were derived</h4>
+        <p>Each principle is derived from an obligation or failure mode specific to regulated financial services: model risk management expectations, suitability and best-interest standards, fair underwriting and anti-discrimination law, books-and-records and supervision duties, privacy and MNPI controls, algorithmic trading safeguards, and operational resilience requirements. The generating logic is the sector itself — not a generic productivity framework.</p>
+      </div>
+      <div class="callout">
+        <h4>Template &amp; usage</h4>
+        <p>Each principle follows the TOGAF Architecture Principles template — <b>Name, Statement, Rationale, Implications</b> — extended with a sector example and indicative regulatory anchors. The catalog is intended as a governed EA repository artifact used in ARB intake, design review, and go-live gating for any AI initiative.</p>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Ref</th><th>Principle</th><th>Domain</th><th class="c">CM</th><th class="c">WM</th><th class="c">INS</th></tr></thead>
+      <tbody>
+        <tr><td class="ref">FS-AI-01</td><td>Accountable Human Ownership</td><td><span class="pill p-gold">Trust</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-02</td><td>Licensed Advice Boundary</td><td><span class="pill p-gold">Trust</span></td><td class="c">○</td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-03</td><td>Explainability Proportional to Impact</td><td><span class="pill p-gold">Trust</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-04</td><td>Client Best Interest by Design</td><td><span class="pill p-gold">Trust</span></td><td class="c">○</td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-05</td><td>Model Risk Management for All AI</td><td><span class="pill p-crim">Risk</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-06</td><td>Regulatory Traceability of Every Decision</td><td><span class="pill p-crim">Risk</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-07</td><td>Fairness Testing Before &amp; After Deployment</td><td><span class="pill p-crim">Risk</span></td><td class="c">○</td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-08</td><td>Compliance Gates Precede Capability</td><td><span class="pill p-crim">Risk</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-09</td><td>Data Sovereignty &amp; Confidentiality Boundaries</td><td><span class="pill p-teal">Data</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-10</td><td>Grounded, Approved Knowledge Only</td><td><span class="pill p-teal">Data</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-11</td><td>Model &amp; Prompt Change Control</td><td><span class="pill p-teal">Data</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-12</td><td>Fail to Safe, Fail to Human</td><td><span class="pill p-steel">Resilience</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+        <tr><td class="ref">FS-AI-13</td><td>Market Integrity &amp; Autonomy Limits</td><td><span class="pill p-steel">Resilience</span></td><td class="c"><span class="dotmark">●</span></td><td class="c">○</td><td class="c">○</td></tr>
+        <tr><td class="ref">FS-AI-14</td><td>Continuous Monitoring &amp; Drift Response</td><td><span class="pill p-steel">Resilience</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td><td class="c"><span class="dotmark">●</span></td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">● primary applicability &nbsp;·&nbsp; ○ applicable where the use case touches that obligation (e.g., FS-AI-02 applies in capital markets wherever retail communications or recommendations occur). CM = Capital Markets, WM = Wealth Management, INS = Insurance.</p>
+
+    <div class="quote">“In regulated finance, the architecture question is never <span>‘what can AI do?’</span> — it is <span>‘what can we stand behind?’</span>”</div>
+  </section>
+
+  <!-- ============ TRUST ============ -->
+  <section id="trust" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--gold)"></span><h2>Trust &amp; Accountability</h2><span class="range">FS-AI-01 — FS-AI-04</span></div>
+    <p class="phase-intro">Who answers for the system, who is allowed to advise, what must be explainable, and whose interest the system serves. These principles exist because in financial services accountability is personal, advice is licensed, and reasons are legally required.</p>
+
+    <div class="tprin b-gold">
+      <div class="tprin-head"><span class="ref">FS-AI-01</span><h3>Accountable Human Ownership</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Every AI system shall have a named, accountable business owner and a designated model owner. Accountability for decisions and outcomes remains with identified humans and is never delegated to the system.</div>
+        <div class="lbl">Rationale</div><div class="val">Regulators hold firms and individuals accountable — never algorithms. Without named ownership there is no one to accept risk, fund remediation, or answer a regulator, and "the model did it" is not a defense.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>The AI inventory records a business owner and model owner for every system; orphaned systems are restricted or decommissioned.</li>
+            <li>Risk acceptance for AI use is signed by the accountable owner, not by the delivery team.</li>
+            <li>Ownership transfer is mandatory on role change, verified in periodic attestation.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> A robo-rebalancing model has a named first-line owner and a second-line model risk officer; both appear in the model inventory entry.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Model risk governance expectations (e.g., SR 11-7 / OCC 2011-12 style); senior accountability regimes; NAIC AI model governance guidance.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-gold">
+      <div class="tprin-head"><span class="ref">FS-AI-02</span><h3>Licensed Advice Boundary</h3><span class="sectors">WM · INS · (CM retail)</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">No AI-generated output shall constitute investment, insurance, or financial advice to a client unless it is reviewed and adopted by an appropriately licensed professional who assumes responsibility for it.</div>
+        <div class="lbl">Rationale</div><div class="val">Suitability, best-interest, and producer-licensing obligations attach to licensed individuals and supervised firms. AI cannot hold a license, owe a fiduciary duty, or be sanctioned — so it cannot be the source of advice.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Client-facing AI is positioned and labeled as information or assistance, never advice; disclosures are standardized.</li>
+            <li>Advice-adjacent outputs flow through a licensed-human approval workflow before reaching clients.</li>
+            <li>Supervisory procedures explicitly cover AI-assisted communications and recommendations.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> GenAI drafts portfolio commentary; the advisor reviews, edits, and sends it under their own name and supervision chain.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Best-interest / suitability standards (e.g., Reg BI-style); investment adviser fiduciary duty; state insurance producer licensing; supervision rules.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-gold">
+      <div class="tprin-head"><span class="ref">FS-AI-03</span><h3>Explainability Proportional to Impact</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">AI-influenced decisions affecting client outcomes — underwriting, pricing, suitability, claims, credit — shall be explainable in plain language to the affected client and in technical detail to regulators and auditors, with rigor scaled to decision impact.</div>
+        <div class="lbl">Rationale</div><div class="val">Adverse-action and claim-decision obligations require stated reasons. Where the law demands a reason, an unexplainable model is an unusable model — regardless of its accuracy.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Model selection for high-impact decisions weighs explainability as a first-class criterion, not an afterthought.</li>
+            <li>Reason codes / key-factor outputs are produced for every adverse client decision.</li>
+            <li>Opaque models in high-impact uses require compensating controls: surrogate explanations plus mandatory human review, or they are not used.</li>
+          </ul>
+          <div class="ex"><b>Example (INS):</b> An auto-underwriting model emits the top contributing factors for every declined application, feeding the adverse-action notice.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Adverse-action requirements (ECOA-style); fair claims handling standards; insurance AI circulars (e.g., NY DFS-style); supervisory expectations.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-gold">
+      <div class="tprin-head"><span class="ref">FS-AI-04</span><h3>Client Best Interest by Design</h3><span class="sectors">WM · INS · (CM retail)</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">AI systems that recommend, rank, or price products shall embed best-interest, suitability, and fair-treatment obligations as design constraints in the optimization objective — not as post-hoc compliance checks.</div>
+        <div class="lbl">Rationale</div><div class="val">An AI optimizer pursues exactly what it is told to maximize. If revenue or denial-rate is the objective and client interest is only a filter, conflicts of interest are built into the mathematics of the system.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Optimization objectives and reward functions are documented and reviewed for conflicts at design time.</li>
+            <li>Recommendation engines are constrained to the suitable product universe for the specific client, regardless of margin.</li>
+            <li>Claims and service AI shall not be optimized on denial rates, delay, or attrition of valid claims.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> The recommendation engine excludes any product outside the client's documented risk profile — even when it carries the highest margin.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Best-interest standards; conflict-of-interest disclosure obligations; unfair trade practice / unfair claims practice statutes.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RISK ============ -->
+  <section id="risk" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--crim)"></span><h2>Risk &amp; Compliance</h2><span class="range">FS-AI-05 — FS-AI-08</span></div>
+    <p class="phase-intro">How AI is inventoried, validated, traced, tested for bias, and gated before it touches production. These principles translate model risk management and supervision duties into architecture requirements.</p>
+
+    <div class="tprin b-crim">
+      <div class="tprin-head"><span class="ref">FS-AI-05</span><h3>Model Risk Management for All AI</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Every AI model — including generative AI, agentic workflows, and vendor-embedded AI — shall be captured in the model inventory, risk-tiered by materiality, and independently validated in proportion to its tier, before use and periodically thereafter.</div>
+        <div class="lbl">Rationale</div><div class="val">Model risk arises from incorrect outputs and from correct outputs used incorrectly. GenAI, prompts, agents, and third-party AI are models in substance; excluding them from MRM creates an ungoverned shadow estate.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>The inventory definition of "model" explicitly includes LLM applications, prompts/agents with material effect, and vendor AI features.</li>
+            <li>A documented tiering method (client impact, financial exposure, regulatory sensitivity, autonomy) drives validation depth.</li>
+            <li>An independent validation function exists with authority to restrict or reject; unvalidated high-tier models do not reach production.</li>
+          </ul>
+          <div class="ex"><b>Example (CM):</b> A pre-trade analytics LLM assistant is tiered high because it influences trading decisions, and is validated before desk rollout.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Supervisory model risk guidance (SR 11-7 / OCC style); insurance model governance bulletins; third-party risk management expectations.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-crim">
+      <div class="tprin-head"><span class="ref">FS-AI-06</span><h3>Regulatory Traceability of Every Decision</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Every AI-influenced decision shall be reconstructable end-to-end — input data and versions, model and prompt versions, output, and subsequent human action — and retained in accordance with books-and-records obligations.</div>
+        <div class="lbl">Rationale</div><div class="val">Regulators and courts ask "why did the system do that, on that date, for that client?" Years later. Without decision lineage there is no defensible answer, and AI-generated business records carry the same retention duties as any other record.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>A decision-logging standard defines the minimum captured for every AI-influenced decision.</li>
+            <li>Audit trails are tamper-evident; retention schedules align to records rules (including immutable storage where required).</li>
+            <li>Reconstruction capability is tested — periodically replaying a past decision is an audit procedure, not a hope.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> A 2024 rebalancing recommendation is reconstructed in a 2026 exam: model v3.2, the market-data snapshot used, and the advisor's approval.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Books-and-records rules (SEC 17a-4 / FINRA 4511 style); supervision and audit-trail expectations; claims-file documentation standards.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-crim">
+      <div class="tprin-head"><span class="ref">FS-AI-07</span><h3>Fairness Testing Before &amp; After Deployment</h3><span class="sectors">WM · INS · credit-adjacent CM</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">AI used in underwriting, pricing, credit, claims, or eligibility decisions shall be tested for unlawful bias and disparate impact — including proxy discrimination through correlated variables and third-party data — before deployment, and monitored continuously in production.</div>
+        <div class="lbl">Rationale</div><div class="val">AI can discriminate without ever seeing a protected attribute, through proxies like geography, purchase history, or external scores. Fair-lending and insurance anti-discrimination law applies to outcomes, not intentions.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Pre-deployment disparate-impact analysis is a mandatory validation step for in-scope models, with documented thresholds.</li>
+            <li>Proxy-variable review covers all inputs, including vendor data and external scores.</li>
+            <li>Production fairness monitoring exists with a defined remediation path when thresholds are breached.</li>
+          </ul>
+          <div class="ex"><b>Example (INS):</b> A life-underwriting model using external lifestyle data is tested to confirm those scores do not function as a proxy for protected class.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Anti-discrimination law in credit and insurance (ECOA / FHA style); state insurance AI fairness bulletins; regulator guidance on external data and proxies.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-crim">
+      <div class="tprin-head"><span class="ref">FS-AI-08</span><h3>Compliance Gates Precede Capability</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">No AI capability shall reach production — and no material change shall be promoted — without passing defined compliance, legal, and risk gates. Surveillance and supervision shall extend to AI-generated content and AI-initiated actions.</div>
+        <div class="lbl">Rationale</div><div class="val">GenAI experimentation moves faster than control frameworks. Supervision duties over communications, recommendations, and trading do not lapse because a machine produced the content — ungated capability is unsupervised activity.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>A stage-gate path (intake → tiering → validation → compliance/legal review → pilot → production) is mandatory for all AI initiatives.</li>
+            <li>E-communications surveillance and trade surveillance ingest AI-assisted outputs and actions.</li>
+            <li>Experimentation sandboxes are segregated from production data and client channels.</li>
+          </ul>
+          <div class="ex"><b>Example (CM):</b> A research-summarization tool passes compliance review of disclaimers and information-barrier controls before analysts may use it.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Supervisory system requirements (FINRA 3110 style); communications-with-the-public rules; change governance expectations in MRM guidance.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DATA ============ -->
+  <section id="data" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--teal)"></span><h2>Data &amp; Model Integrity</h2><span class="range">FS-AI-09 — FS-AI-11</span></div>
+    <p class="phase-intro">What data AI may touch, what knowledge it may speak from, and how models and prompts change. These principles protect confidentiality, truthfulness, and reproducibility.</p>
+
+    <div class="tprin b-teal">
+      <div class="tprin-head"><span class="ref">FS-AI-09</span><h3>Data Sovereignty &amp; Confidentiality Boundaries</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Client PII, account and policy data, MNPI, and proprietary firm data shall be processed only within approved, governed AI boundaries. No such data shall be submitted to unapproved external AI services, and vendor terms shall prohibit training on firm data.</div>
+        <div class="lbl">Rationale</div><div class="val">Privacy law, confidentiality duties, and insider-information controls all break the moment client or material non-public data enters an ungoverned model. Shadow AI usage is the single largest leakage vector in the GenAI era.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>An approved AI service catalog defines where each data classification may be processed, including residency constraints.</li>
+            <li>DLP and network controls block client/MNPI data from unapproved AI endpoints.</li>
+            <li>Vendor contracts include no-training clauses, data segregation, and deletion rights; these are verified, not assumed.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> Advisors use the firm's governed assistant for client work; public chatbots are blocked for client data via DLP policy.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Financial privacy rules (GLBA / Reg S-P style); MNPI and information-barrier controls; cross-border data residency requirements.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-teal">
+      <div class="tprin-head"><span class="ref">FS-AI-10</span><h3>Grounded, Approved Knowledge Only</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Client-facing and decision-supporting AI outputs shall be grounded in approved, current, and traceable knowledge sources, with citations where practicable. Ungrounded generation shall never be presented as fact.</div>
+        <div class="lbl">Rationale</div><div class="val">A hallucinated performance figure, policy term, or tax rule is a misrepresentation with liability attached. Communications standards require content that is fair, balanced, and not misleading — a bar free generation cannot reliably meet.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Retrieval-augmented patterns against governed repositories are the default for factual outputs.</li>
+            <li>Knowledge bases have owners and freshness SLAs; stale sources are flagged or excluded.</li>
+            <li>Hallucination and factual-accuracy testing is part of validation for client-facing systems.</li>
+          </ul>
+          <div class="ex"><b>Example (INS):</b> The policyholder chatbot answers only from filed policy documents and cites the specific clause it relied on.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Communications-with-the-public standards; misrepresentation and unfair-practice statutes; disclosure accuracy obligations.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-teal">
+      <div class="tprin-head"><span class="ref">FS-AI-11</span><h3>Model &amp; Prompt Change Control</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Models, prompts, agents, and their configurations shall be versioned and promoted only through controlled change management. No silent change shall reach production — including vendor-initiated foundation-model updates.</div>
+        <div class="lbl">Rationale</div><div class="val">A single upstream LLM version change can alter the behavior of every dependent workflow overnight. Validation, traceability (FS-AI-06), and reproducibility are meaningless without version stability.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Prompts and configurations live under version control with review and approval, like code.</li>
+            <li>Vendor agreements require notice of model updates; regression test suites run before adoption.</li>
+            <li>Champion–challenger evaluation and documented rollback paths exist for material changes.</li>
+          </ul>
+          <div class="ex"><b>Example (CM):</b> A vendor LLM upgrade is regression-tested against a benchmark suite before any trading-desk assistant switches versions.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Change-management expectations in model risk guidance; IT general controls; third-party risk management standards.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESILIENCE ============ -->
+  <section id="resilience" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--steel)"></span><h2>Resilience &amp; Market Integrity</h2><span class="range">FS-AI-12 — FS-AI-14</span></div>
+    <p class="phase-intro">How AI behaves when things go wrong, what hard limits bound its autonomy in markets, and how degradation is detected before it becomes an incident.</p>
+
+    <div class="tprin b-steel">
+      <div class="tprin-head"><span class="ref">FS-AI-12</span><h3>Fail to Safe, Fail to Human</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">AI system failure or degraded confidence shall result in a designed safe fallback — human handling, an established manual process, or a conservative default. Silent failure and unbounded autonomous behavior under degradation are prohibited.</div>
+        <div class="lbl">Rationale</div><div class="val">Outages and degradations are certainties, not possibilities. In regulated workflows a silent failure becomes a conduct or resilience incident: unpaid valid claims, mishandled orders, unsupervised advice.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Every AI-dependent workflow documents its degraded mode and the trigger conditions for it.</li>
+            <li>Confidence thresholds route low-certainty cases to humans by design.</li>
+            <li>Resilience and incident-response testing explicitly includes AI dependencies and their fallbacks.</li>
+          </ul>
+          <div class="ex"><b>Example (INS):</b> When claims-triage AI is unavailable, all claims route to the standard manual queue with the regulatory SLA clock intact.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Operational resilience regimes (DORA-style); business continuity expectations; fair claims handling timeliness standards.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-steel">
+      <div class="tprin-head"><span class="ref">FS-AI-13</span><h3>Market Integrity &amp; Autonomy Limits</h3><span class="sectors">CM</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">AI participating in trading, order handling, or other market-facing activity shall operate within hard autonomy limits — pre-trade risk controls, throttles, and tested kill switches — enforced in a control layer outside the model's reach, and shall be conformance-tested before deployment.</div>
+        <div class="lbl">Rationale</div><div class="val">Algorithmic trading rules require limits, testing, and immediate shutdown capability. Learning systems optimizing freely can discover manipulative or destabilizing strategies; the safeguard must be architectural, not behavioral.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Risk limits, throttles, and kill switches live in an independent control plane the model cannot modify.</li>
+            <li>Kill-switch operation is periodically tested at desk and firm level.</li>
+            <li>Trade surveillance covers AI-driven flow for manipulation patterns (spoofing-like, momentum-ignition-like behavior).</li>
+          </ul>
+          <div class="ex"><b>Example (CM):</b> An execution-optimization agent is capped by risk limits enforced in a separate gateway, with a desk-level kill switch tested quarterly.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Algorithmic trading control regimes (MiFID II RTS 6 style); market access rules (SEC 15c3-5 style); market abuse / manipulation prohibitions.</div>
+      </div>
+    </div>
+
+    <div class="tprin b-steel">
+      <div class="tprin-head"><span class="ref">FS-AI-14</span><h3>Continuous Monitoring &amp; Drift Response</h3><span class="sectors">CM · WM · INS</span></div>
+      <div class="tprin-body">
+        <div class="lbl">Statement</div><div class="val">Production AI shall be continuously monitored for performance, data and concept drift, and anomalous behavior, with defined thresholds that trigger a documented response: review, restriction, retraining, or retirement.</div>
+        <div class="lbl">Rationale</div><div class="val">Markets shift, client behavior shifts, risk regimes shift. A model validated yesterday degrades silently today; ongoing monitoring is an explicit model-risk expectation, and the response path matters as much as the alert.</div>
+        <div class="lbl">Implications</div><div class="val">
+          <ul>
+            <li>Monitoring metrics and thresholds are defined during validation, not invented after launch.</li>
+            <li>Drift dashboards and alerting exist for every high-tier model.</li>
+            <li>A review → restrict → retire playbook is documented and rehearsed; retirement is a planned capability.</li>
+          </ul>
+          <div class="ex"><b>Example (WM):</b> A churn-prediction model is auto-flagged when input distributions shift after a rate change, and is restricted pending revalidation.</div>
+        </div>
+        <div class="lbl">Anchors</div><div class="val anchors">Ongoing-monitoring expectations in model risk guidance; insurance model governance bulletins; operational risk frameworks.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APPLICATION ============ -->
+  <section id="apply" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--gold)"></span><h2>Governance &amp; Application</h2><span class="range">How the catalog operates</span></div>
+    <p class="phase-intro">The end-to-end governance flow every AI initiative follows, a sequence view of the principles operating inside a live use case, and the 5W &amp; 1H of running this catalog.</p>
+
+    <div class="svg-wrap">
+      <h5>End-to-End AI Governance Flow — principles applied at each gate</h5>
+      <svg viewBox="0 0 1020 240" width="100%" role="img" aria-label="AI governance flow from intake to production with principle references">
+        <defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#98a2a8"/></marker>
+        <marker id="fg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d4a843"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="15" y="40" width="140" height="64" rx="11" fill="#241c0d" stroke="#6e5a26"/>
+          <text x="85" y="66" fill="#ecd391" font-weight="700">Intake</text>
+          <text x="85" y="84" fill="#98a2a8" font-size="10.5">Owner named · 01, 02, 04</text>
+          <rect x="185" y="40" width="140" height="64" rx="11" fill="#26130f" stroke="#73362e"/>
+          <text x="255" y="66" fill="#efb0a8" font-weight="700">Risk Tiering</text>
+          <text x="255" y="84" fill="#98a2a8" font-size="10.5">Inventory · 05</text>
+          <rect x="355" y="40" width="150" height="64" rx="11" fill="#26130f" stroke="#73362e"/>
+          <text x="430" y="60" fill="#efb0a8" font-weight="700">Validation</text>
+          <text x="430" y="76" fill="#98a2a8" font-size="10.5">Fairness · grounding</text>
+          <text x="430" y="91" fill="#98a2a8" font-size="10.5">03, 07, 10</text>
+          <rect x="535" y="40" width="150" height="64" rx="11" fill="#241c0d" stroke="#6e5a26"/>
+          <text x="610" y="60" fill="#ecd391" font-weight="700">Compliance Gate</text>
+          <text x="610" y="76" fill="#98a2a8" font-size="10.5">Legal · surveillance</text>
+          <text x="610" y="91" fill="#98a2a8" font-size="10.5">08, 09</text>
+          <rect x="715" y="40" width="130" height="64" rx="11" fill="#0e2220" stroke="#2b5f59"/>
+          <text x="780" y="66" fill="#a4ddd6" font-weight="700">Pilot</text>
+          <text x="780" y="84" fill="#98a2a8" font-size="10.5">Controlled scope · 11</text>
+          <rect x="875" y="40" width="130" height="64" rx="11" fill="#141c2a" stroke="#3c4f70"/>
+          <text x="940" y="60" fill="#bccde8" font-weight="700">Production</text>
+          <text x="940" y="76" fill="#98a2a8" font-size="10.5">Monitored · limits</text>
+          <text x="940" y="91" fill="#98a2a8" font-size="10.5">06, 12, 13, 14</text>
+        </g>
+        <g stroke="#98a2a8" stroke-width="1.6" fill="none">
+          <line x1="155" y1="72" x2="181" y2="72" marker-end="url(#fa)"/>
+          <line x1="325" y1="72" x2="351" y2="72" marker-end="url(#fa)"/>
+          <line x1="505" y1="72" x2="531" y2="72" marker-end="url(#fa)"/>
+          <line x1="685" y1="72" x2="711" y2="72" marker-end="url(#fa)"/>
+          <line x1="845" y1="72" x2="871" y2="72" marker-end="url(#fa)"/>
+        </g>
+        <g stroke="#d4a843" stroke-width="1.4" fill="none" stroke-dasharray="5 4">
+          <path d="M940,104 C940,205 255,205 255,108" marker-end="url(#fg)"/>
+          <path d="M780,104 C780,165 430,165 430,108" marker-end="url(#fg)"/>
+        </g>
+        <text x="605" y="158" fill="#d4a843" font-size="10.5" text-anchor="middle">pilot findings feed revalidation</text>
+        <text x="600" y="198" fill="#d4a843" font-size="10.5" text-anchor="middle">monitoring &amp; drift alerts trigger re-tiering, revalidation, restriction, or retirement</text>
+        <text x="510" y="232" fill="#98a2a8" font-size="10.5" text-anchor="middle">Numbers reference FS-AI principles applied at each stage · ARB checkpoints at every gate</text>
+      </svg>
+    </div>
+
+    <div class="svg-wrap">
+      <h5>Sequence — AI-assisted client recommendation (WM) with principles in action</h5>
+      <svg viewBox="0 0 1020 430" width="100%" role="img" aria-label="Sequence diagram of AI-assisted advice flowing through governed knowledge, licensed review, surveillance and archive">
+        <g font-size="12" text-anchor="middle" font-weight="700">
+          <rect x="30" y="14" width="130" height="34" rx="8" fill="#241c0d" stroke="#6e5a26"/><text x="95" y="36" fill="#ecd391">Advisor</text>
+          <rect x="230" y="14" width="150" height="34" rx="8" fill="#141c2a" stroke="#3c4f70"/><text x="305" y="36" fill="#bccde8">AI Assistant</text>
+          <rect x="450" y="14" width="180" height="34" rx="8" fill="#0e2220" stroke="#2b5f59"/><text x="540" y="36" fill="#a4ddd6">Governed Knowledge</text>
+          <rect x="700" y="14" width="140" height="34" rx="8" fill="#26130f" stroke="#73362e"/><text x="770" y="36" fill="#efb0a8">Surveillance</text>
+          <rect x="880" y="14" width="120" height="34" rx="8" fill="#171c22" stroke="#46525c"/><text x="940" y="36" fill="#ecefe9">Client</text>
+        </g>
+        <g stroke="#2a3138" stroke-width="1.4" stroke-dasharray="4 5">
+          <line x1="95" y1="48" x2="95" y2="410"/><line x1="305" y1="48" x2="305" y2="410"/>
+          <line x1="540" y1="48" x2="540" y2="410"/><line x1="770" y1="48" x2="770" y2="410"/><line x1="940" y1="48" x2="940" y2="410"/>
+        </g>
+        <defs><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#98a2a8"/></marker></defs>
+        <g stroke="#98a2a8" stroke-width="1.5" fill="none">
+          <line x1="95" y1="85" x2="301" y2="85" marker-end="url(#sa)"/>
+          <line x1="305" y1="130" x2="536" y2="130" marker-end="url(#sa)"/>
+          <line x1="540" y1="170" x2="309" y2="170" marker-end="url(#sa)"/>
+          <line x1="305" y1="215" x2="99" y2="215" marker-end="url(#sa)"/>
+          <line x1="95" y1="285" x2="766" y2="285" marker-end="url(#sa)"/>
+          <line x1="770" y1="330" x2="936" y2="330" marker-end="url(#sa)"/>
+          <line x1="770" y1="375" x2="774" y2="375"/>
+        </g>
+        <g font-size="11.5" fill="#c8cdc9" text-anchor="middle">
+          <text x="198" y="77">1 · Request draft recommendation</text>
+          <text x="422" y="122">2 · Retrieve from approved sources only</text>
+          <text x="424" y="162" fill="#4fb3a9">3 · Grounded content + citations  [FS-AI-09, 10]</text>
+          <text x="200" y="207" fill="#7e9cc9">4 · Draft labeled "for advisor review"  [FS-AI-02]</text>
+          <text x="430" y="277" fill="#d4a843">5 · Advisor reviews, edits, approves &amp; sends under own name  [FS-AI-02, 04]</text>
+          <text x="855" y="322" fill="#d4685e">6 · Surveilled + delivered  [FS-AI-08]</text>
+        </g>
+        <rect x="690" y="358" width="160" height="36" rx="8" fill="#26130f" stroke="#73362e"/>
+        <text x="770" y="380" font-size="11" fill="#efb0a8" text-anchor="middle">7 · Archived: full lineage [FS-AI-06]</text>
+        <text x="510" y="420" fill="#98a2a8" font-size="10.5" text-anchor="middle">If the assistant is unavailable or confidence is low → the advisor proceeds manually [FS-AI-12]; model/prompt versions logged at every step [FS-AI-11]</text>
+      </svg>
+    </div>
+
+    <table>
+      <thead><tr><th style="width:80px">Question</th><th>Answer</th><th>Real-world example</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">Why</td><td>To make AI adoption defensible: every system can survive a regulator's question, a client complaint, or a market incident review.</td><td>When a regulator asks why a claim was denied, the firm produces reasons, lineage, and the accountable owner within days, not months.</td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">What</td><td>A 14-principle catalog (FS-AI-01–14) used as the compliance baseline for all AI solution architectures across CM, WM, and INS lines.</td><td>Every solution design includes a principle-by-principle compliance statement with evidence.</td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">Who</td><td>Owned by Enterprise Architecture; enforced by the ARB with Model Risk, Compliance, and Legal as gate owners; applied by solution architects and product teams.</td><td>Model Risk owns the FS-AI-05/07 gates; Compliance owns FS-AI-02/08; EA chairs the review.</td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">When</td><td>At intake (01–04), in design and validation (05–11), at go-live, and continuously in operation (06, 12–14) — plus on every material change.</td><td>A vendor LLM upgrade re-triggers the FS-AI-11 regression gate before adoption.</td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">Where</td><td>In the governed EA repository as a versioned artifact, referenced from every AI project's architecture definition and ADRs.</td><td>ADR-042 cites FS-AI-13 as the reason the kill switch lives outside the agent's control plane.</td></tr>
+        <tr><td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600">How</td><td>Compliance assessment per principle (Compliant / Partial / Non-compliant); waivers require documented rationale, compensating controls, an expiry date, and ARB approval.</td><td>A 60-day pilot waives full drift dashboards (FS-AI-14) with weekly manual review as the compensating control.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="footnote"><b>Note:</b> Regulatory anchors are indicative and style-referenced to illustrate derivation; specific applicability varies by jurisdiction, charter, and business activity and must be confirmed with Compliance and Legal before adoption. This catalog is an original work product; the TOGAF principle template is an open industry standard.</p>
+
+    <div class="quote">“Govern the model like a trader, document it like a record, and design it to withstand scrutiny — <span>because one day it will face it.</span>”</div>
+  </section>
+
+</div>
+<script>
+  const btns=document.querySelectorAll('.tab-btn'),panels=document.querySelectorAll('.panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FS-AI Framework — AI Architecture Principles for Financial Services</title>
+<meta name="description" content="14 AI architecture principles and a reference architecture for Capital Markets, Wealth Management & Insurance — the financial-services implementation layer for AI governance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fafaf8;--panel:#fff;--ink:#1d2530;--muted:#5d6770;--line:#dcdfd9;
+    --gold:#9a7420;--gold-bg:#faf3e2;--gold-line:#d9c184;
+    --crim:#a8402f;--teal:#1f7d72;--steel:#3f63a0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;padding:40px 18px 70px}
+  .wrap{max-width:980px;margin:0 auto}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);text-align:center}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(28px,4.6vw,46px);text-align:center;margin:12px 0 10px;color:#171e28}
+  .subtitle{text-align:center;color:var(--muted);font-size:16px;max-width:740px;margin:0 auto 8px}
+  .tagline{display:block;width:max-content;max-width:100%;margin:18px auto 30px;padding:8px 22px;border:1px solid var(--gold-line);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);background:var(--gold-bg);text-align:center}
+  .hero{display:block;width:100%;border:1px solid var(--line);border-radius:16px;margin-bottom:34px;box-shadow:0 14px 40px rgba(23,30,40,.10)}
+  h2{font-family:'Fraunces',serif;font-size:22px;margin:36px 0 14px;text-align:center}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+  .card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px;transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(23,30,40,.10)}
+  .card b{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
+  .card h3{font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px}
+  .card p{font-size:13.5px;color:var(--muted)}
+  .c1 b{color:var(--gold)} .c2 b{color:var(--steel)} .c3 b{color:var(--crim)} .c4 b{color:var(--teal)}
+  .quote{margin-top:38px;text-align:center;font-family:'Fraunces',serif;font-size:clamp(15px,2.2vw,19px);font-weight:600;color:#2a3340;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .quote span{color:var(--gold)}
+  footer{margin-top:30px;text-align:center;font-size:12.5px;color:var(--muted)}
+  footer a{color:var(--steel)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">FS-AI Framework</div>
+  <h1>AI Architecture Principles for<br>Capital Markets · Wealth Management · Insurance</h1>
+  <p class="subtitle">Fourteen principles in TOGAF form, a layered reference architecture, and full traceability from regulation to principle to component to ARB evidence.</p>
+  <span class="tagline">Built for the Client · Defensible by Design</span>
+
+  <a href="fs-ai-principles-onepage-map.html"><img class="hero" src="assets/fs-ai-principles-onepage-map.png" alt="FS-AI Principles one-page map"></a>
+
+  <h2>Explore the framework</h2>
+  <div class="cards">
+    <a class="card c1" href="fs-ai-principles-catalog.html"><b>FS-AI-PRIN-CAT-001</b><h3>Principles Catalog</h3><p>All 14 principles in full TOGAF template — Statement, Rationale, Implications — with sector examples and regulatory anchors.</p></a>
+    <a class="card c2" href="fs-ai-reference-architecture.html"><b>FS-AI-RA-001</b><h3>Reference Architecture</h3><p>Six layers, two cross-cutting services, a governance plane — plus trade, advice, and claims lifecycle sequence flows.</p></a>
+    <a class="card c3" href="fs-ai-standout-edition.html"><b>Standout Edition</b><h3>Field Notes · Crosswalk · Anti-Patterns</h3><p>Field notes, citation-level anchors, NIST / ISO 42001 / EU AI Act crosswalk, and nine named anti-patterns.</p></a>
+    <a class="card c4" href="fs-ai-principles-onepage-map.html"><b>Poster</b><h3>One-Page Map</h3><p>The entire framework on a single page — the version you screenshot for the architecture review.</p></a>
+  </div>
+
+  
+  <h2>Who it’s for</h2>
+  <p style="text-align:center;color:var(--muted);font-size:14px;max-width:760px;margin:0 auto 8px">Enterprise &amp; solution architects designing AI platforms · ARB and architecture governance teams · CTOs and heads of technology · Model risk, compliance &amp; legal partners · delivery teams who inherit compliance by construction.</p>
+
+  <div class="quote">"Govern the model like a trader, document it like a record, and design it to withstand scrutiny — <span>because one day it will face it.</span>"</div>
+
+  <footer>
+    Licensed CC BY-NC-ND 4.0 · Regulatory references are indicative, not legal advice ·
+    <a href="https://github.com/edwardsuresh/fs-ai-framework">Source on GitHub</a>
+  </footer>
+</div>
+</body>
+</html>

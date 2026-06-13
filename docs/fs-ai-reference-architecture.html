@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FS-AI Reference Architecture (Public Edition) — Capital Markets, Wealth Management &amp; Insurance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101418; --panel:#171c22; --panel-2:#13171c;
+    --ink:#ecefe9; --muted:#98a2a8; --line:#2a3138;
+    --gold:#d4a843;   --gold-bg:#241c0d;   --gold-line:#6e5a26;
+    --crim:#d4685e;   --crim-bg:#26130f;   --crim-line:#73362e;
+    --teal:#4fb3a9;   --teal-bg:#0e2220;   --teal-line:#2b5f59;
+    --steel:#7e9cc9;  --steel-bg:#141c2a;  --steel-line:#3c4f70;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;padding:32px 16px 64px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-align:center}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(24px,3.8vw,38px);text-align:center;margin:10px 0 8px}
+  .subtitle{text-align:center;color:var(--muted);font-size:15px;max-width:800px;margin:0 auto 22px}
+  .doc-control{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:26px}
+  .doc-control div{background:var(--panel-2);padding:10px 14px}
+  .doc-control b{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .doc-control span{font-size:13px}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:26px}
+  .tab-btn{font-weight:600;font-size:13.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 15px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+  .tab-btn:hover{color:var(--ink);border-color:#46525c}
+  .tab-btn.active{color:#101418;background:var(--gold);border-color:var(--gold)}
+  .tab-btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .panel{display:none;animation:fade .25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
+  .phase-head{display:flex;align-items:center;gap:12px;margin:6px 0 12px;flex-wrap:wrap}
+  .phase-head .dot{width:12px;height:12px;border-radius:3px}
+  .phase-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+  .phase-head .range{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .phase-intro{color:var(--muted);font-size:14.5px;margin-bottom:20px;max-width:820px}
+  .svg-wrap{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:18px;overflow-x:auto;margin:18px 0}
+  .svg-wrap h5{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:10px}
+  .callout{border-radius:14px;padding:16px 18px;margin-bottom:16px;border:1px solid var(--line);background:var(--panel-2)}
+  .callout h4{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:var(--gold)}
+  .callout p{font-size:14px;color:#c8cdc9}
+  .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:16px}
+
+  /* Building block cards */
+  .bb{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px;background:var(--panel)}
+  .bb-head{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .bb-head .lyr{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;padding:3px 10px;border-radius:6px}
+  .bb-head h3{font-family:'Fraunces',serif;font-size:16.5px;font-weight:700;flex:1}
+  .bb-head .prins{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted)}
+  .bb-body{padding:14px 18px}
+  .bb-body p{font-size:13.8px;color:#c8cdc9;margin-bottom:10px}
+  .bb-body ul{margin-left:18px;display:grid;gap:5px;font-size:13.5px;color:#c8cdc9}
+  .bb-body li::marker{color:var(--muted)}
+  .bb-body .ex{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:12.8px;color:var(--muted)}
+  .bb-body .ex b{color:var(--ink)}
+  .l-gold .bb-head{background:var(--gold-bg)} .l-gold .lyr{background:rgba(212,168,67,.16);color:var(--gold)} .l-gold h3{color:#ecd391} .l-gold{border-color:var(--gold-line)}
+  .l-crim .bb-head{background:var(--crim-bg)} .l-crim .lyr{background:rgba(212,104,94,.16);color:var(--crim)} .l-crim h3{color:#efb0a8} .l-crim{border-color:var(--crim-line)}
+  .l-teal .bb-head{background:var(--teal-bg)} .l-teal .lyr{background:rgba(79,179,169,.16);color:var(--teal)} .l-teal h3{color:#a4ddd6} .l-teal{border-color:var(--teal-line)}
+  .l-steel .bb-head{background:var(--steel-bg)} .l-steel .lyr{background:rgba(126,156,201,.16);color:var(--steel)} .l-steel h3{color:#bccde8} .l-steel{border-color:var(--steel-line)}
+  .l-ink .bb-head{background:#1b2026} .l-ink .lyr{background:rgba(236,239,233,.12);color:var(--ink)} .l-ink h3{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.3px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  td.ref{font-family:'JetBrains Mono',monospace;font-weight:600;white-space:nowrap;color:var(--gold)}
+  .footnote{font-size:12.5px;color:var(--muted);margin-top:22px;padding-top:14px;border-top:1px dashed var(--line)}
+  .quote{margin-top:30px;text-align:center;font-family:'Fraunces',serif;font-size:clamp(15px,2.2vw,20px);font-weight:600;color:#efe6d2;padding:20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#1b2026,#13171c)}
+  .quote span{color:var(--gold)}
+  svg text{font-family:'Inter',sans-serif}
+  .roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:16px 0}
+  .phase-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel)}
+  .phase-card b{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:6px}
+  .phase-card h6{font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px}
+  .phase-card p{font-size:13px;color:#c8cdc9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Companion to FS-AI-PRIN-CAT-001</div>
+  <h1>AI Reference Architecture for<br>Capital Markets, Wealth Management &amp; Insurance</h1>
+  <p class="subtitle">A vendor-neutral, principle-driven reference architecture: six horizontal layers, two cross-cutting services, and a governance plane — every building block traceable to the FS-AI principles catalog, with end-to-end lifecycle flows for each sector.</p>
+
+  <div class="doc-control">
+    <div><b>Artifact</b><span>Reference Architecture</span></div>
+    <div><b>Reference</b><span>FS-AI-RA-001</span></div>
+    <div><b>Derived From</b><span>FS-AI-PRIN 01–14</span></div>
+    <div><b>Status</b><span>Public Edition v1.1</span></div>
+    <div><b>Owner</b><span>Enterprise Architecture</span></div>
+    <div><b>Date</b><span>June 2026</span></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="arch" role="tab">Layered Architecture</button>
+    <button class="tab-btn" data-tab="blocks" role="tab">Building Blocks</button>
+    <button class="tab-btn" data-tab="trace" role="tab">Traceability Matrix</button>
+    <button class="tab-btn" data-tab="flows" role="tab">Sector Flows</button>
+    <button class="tab-btn" data-tab="adopt" role="tab">Adoption &amp; Roadmap</button>
+  </div>
+
+  <!-- ================= ARCHITECTURE ================= -->
+  <section id="arch" class="panel active">
+    <div class="two-col">
+      <div class="callout">
+        <h4>Design thesis</h4>
+        <p>The architecture is the principles made physical. Three structural decisions follow directly from the catalog: <b>(1)</b> controls live in an independent control plane the models cannot modify (FS-AI-08, 12, 13); <b>(2)</b> records/lineage and observability are cross-cutting services touching every layer, not features of individual systems (FS-AI-06, 14); <b>(3)</b> a human oversight layer sits between AI services and clients wherever advice, money, or adverse decisions are involved (FS-AI-02, 05).</p>
+      </div>
+      <div class="callout">
+        <h4>Reading the diagram</h4>
+        <p>Requests flow top-down: channels → human oversight → AI services → control plane → knowledge → data. Nothing reaches data except through the boundary; nothing reaches clients except through oversight and controls. The cross-cutting services on the right capture lineage and telemetry from every layer. Principle references [FS-AI-nn] mark what each element enforces.</p>
+      </div>
+    </div>
+
+    <div class="svg-wrap">
+      <h5>Layered Reference Architecture — generic across CM · WM · INS</h5>
+      <svg viewBox="0 0 1060 600" width="100%" role="img" aria-label="Layered AI reference architecture with six layers, two cross-cutting services and governance plane">
+        <defs>
+          <marker id="ra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#98a2a8"/></marker>
+        </defs>
+
+        <!-- Governance plane -->
+        <rect x="15" y="15" width="1030" height="48" rx="11" fill="#1b2026" stroke="#46525c"/>
+        <text x="530" y="35" text-anchor="middle" fill="#ecefe9" font-weight="700" font-size="13">GOVERNANCE PLANE — ARB Gates · Model Inventory &amp; Tiering · Independent Validation · Change Management</text>
+        <text x="530" y="52" text-anchor="middle" fill="#98a2a8" font-size="10.5">[FS-AI-01 · 05 · 08 · 11]  ·  owns every promotion gate across all layers below</text>
+
+        <!-- Layer: Experience -->
+        <rect x="15" y="83" width="700" height="64" rx="11" fill="#171c22" stroke="#46525c"/>
+        <text x="30" y="106" fill="#ecefe9" font-weight="700" font-size="12.5">L6 · EXPERIENCE &amp; CHANNELS</text>
+        <text x="30" y="125" fill="#98a2a8" font-size="11">Advisor Workspace · Client Portal &amp; Chatbot · Trader Desktop · Claims Workbench · Producer Portal</text>
+
+        <!-- Layer: Human oversight -->
+        <rect x="15" y="160" width="700" height="64" rx="11" fill="#241c0d" stroke="#6e5a26"/>
+        <text x="30" y="183" fill="#ecd391" font-weight="700" font-size="12.5">L5 · HUMAN OVERSIGHT &amp; LICENSED REVIEW   [FS-AI-02 · 04 · 05]</text>
+        <text x="30" y="202" fill="#98a2a8" font-size="11">Licensed Approval Workflow · Escalation Queues · Four-Eyes Checks · Reason-Code Review for Adverse Decisions</text>
+
+        <!-- Layer: AI services -->
+        <rect x="15" y="237" width="700" height="72" rx="11" fill="#141c2a" stroke="#3c4f70"/>
+        <text x="30" y="260" fill="#bccde8" font-weight="700" font-size="12.5">L4 · AI SERVICES   [FS-AI-03 · 05]</text>
+        <text x="30" y="279" fill="#98a2a8" font-size="11">GenAI Assistants (RAG) · Predictive Models (underwriting, triage, churn) · Recommendation Engines</text>
+        <text x="30" y="296" fill="#98a2a8" font-size="11">Agentic Workflows · Explainability Services (reason codes, key factors)</text>
+
+        <!-- Layer: Control plane -->
+        <rect x="15" y="322" width="700" height="76" rx="11" fill="#26130f" stroke="#d4685e" stroke-width="1.8"/>
+        <text x="30" y="345" fill="#efb0a8" font-weight="700" font-size="12.5">L3 · INDEPENDENT AI CONTROL PLANE   [FS-AI-08 · 12 · 13]</text>
+        <text x="30" y="364" fill="#98a2a8" font-size="11">Policy Gateway &amp; Guardrails · Confidence-Based Routing · Pre-Trade Limits &amp; Throttles · Kill Switch</text>
+        <text x="30" y="381" fill="#98a2a8" font-size="11">Compliance Gates · Safe-Fallback Orchestration — enforced OUTSIDE model reach</text>
+
+        <!-- Layer: Knowledge -->
+        <rect x="15" y="411" width="700" height="64" rx="11" fill="#0e2220" stroke="#2b5f59"/>
+        <text x="30" y="434" fill="#a4ddd6" font-weight="700" font-size="12.5">L2 · KNOWLEDGE &amp; GROUNDING   [FS-AI-10]</text>
+        <text x="30" y="453" fill="#98a2a8" font-size="11">Governed Knowledge Stores (policies, research, products) · Retrieval Index · Citation Service · Freshness SLAs</text>
+
+        <!-- Layer: Data boundary -->
+        <rect x="15" y="488" width="700" height="64" rx="11" fill="#0e2220" stroke="#4fb3a9" stroke-width="1.6"/>
+        <text x="30" y="511" fill="#a4ddd6" font-weight="700" font-size="12.5">L1 · GOVERNED DATA BOUNDARY   [FS-AI-09]</text>
+        <text x="30" y="530" fill="#98a2a8" font-size="11">Classification &amp; Entitlements · DLP on AI Endpoints · MNPI / Information Walls · Residency Zones · Vendor No-Train Controls</text>
+
+        <!-- Records & lineage services -->
+        <rect x="735" y="83" width="145" height="469" rx="11" fill="#241c0d" stroke="#6e5a26"/>
+        <text x="807" y="110" text-anchor="middle" fill="#ecd391" font-weight="700" font-size="12">RECORDS &amp; LINEAGE</text>
+        <text x="807" y="126" text-anchor="middle" fill="#ecd391" font-weight="700" font-size="12">SERVICES · CROSS-CUTTING</text>
+        <text x="807" y="146" text-anchor="middle" fill="#98a2a8" font-size="10.5">[FS-AI-06 · 11]</text>
+        <text x="807" y="180" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Decision Logs</text>
+        <text x="807" y="200" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Model / Prompt</text>
+        <text x="807" y="214" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Version Registry</text>
+        <text x="807" y="234" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Immutable Archive</text>
+        <text x="807" y="254" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Reconstruction API</text>
+        <text x="807" y="282" text-anchor="middle" fill="#98a2a8" font-size="10">every decision,</text>
+        <text x="807" y="296" text-anchor="middle" fill="#98a2a8" font-size="10">every version,</text>
+        <text x="807" y="310" text-anchor="middle" fill="#98a2a8" font-size="10">replayable</text>
+
+        <!-- Observability services -->
+        <rect x="900" y="83" width="145" height="469" rx="11" fill="#141c2a" stroke="#3c4f70"/>
+        <text x="972" y="110" text-anchor="middle" fill="#bccde8" font-weight="700" font-size="12">OBSERVABILITY &amp;</text>
+        <text x="972" y="126" text-anchor="middle" fill="#bccde8" font-weight="700" font-size="12">ASSURANCE · CROSS-CUTTING</text>
+        <text x="972" y="146" text-anchor="middle" fill="#98a2a8" font-size="10.5">[FS-AI-07 · 14]</text>
+        <text x="972" y="180" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Performance Dashboards</text>
+        <text x="972" y="200" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Drift Detection</text>
+        <text x="972" y="220" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Fairness Monitoring</text>
+        <text x="972" y="240" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Anomaly Alerts</text>
+        <text x="972" y="260" text-anchor="middle" fill="#c8cdc9" font-size="10.5">Surveillance Feeds</text>
+        <text x="972" y="288" text-anchor="middle" fill="#98a2a8" font-size="10">thresholds trigger</text>
+        <text x="972" y="302" text-anchor="middle" fill="#98a2a8" font-size="10">review · restrict</text>
+        <text x="972" y="316" text-anchor="middle" fill="#98a2a8" font-size="10">retrain · retire</text>
+
+        <!-- vertical arrows between layers -->
+        <g stroke="#98a2a8" stroke-width="1.5" fill="none">
+          <line x1="365" y1="147" x2="365" y2="156" marker-end="url(#ra)"/>
+          <line x1="365" y1="224" x2="365" y2="233" marker-end="url(#ra)"/>
+          <line x1="365" y1="309" x2="365" y2="318" marker-end="url(#ra)"/>
+          <line x1="365" y1="398" x2="365" y2="407" marker-end="url(#ra)"/>
+          <line x1="365" y1="475" x2="365" y2="484" marker-end="url(#ra)"/>
+        </g>
+        <!-- cross-cutting connectors -->
+        <g stroke="#6e5a26" stroke-width="1.2" fill="none" stroke-dasharray="4 4">
+          <line x1="715" y1="115" x2="735" y2="115"/><line x1="715" y1="192" x2="735" y2="192"/>
+          <line x1="715" y1="273" x2="735" y2="273"/><line x1="715" y1="360" x2="735" y2="360"/>
+          <line x1="715" y1="443" x2="735" y2="443"/><line x1="715" y1="520" x2="735" y2="520"/>
+        </g>
+        <g stroke="#3c4f70" stroke-width="1.2" fill="none" stroke-dasharray="4 4">
+          <line x1="880" y1="130" x2="900" y2="130"/><line x1="880" y1="290" x2="900" y2="290"/><line x1="880" y1="460" x2="900" y2="460"/>
+        </g>
+        <text x="530" y="585" text-anchor="middle" fill="#98a2a8" font-size="11">Sector overlays specialize L4–L6: trading analytics &amp; execution agents (CM) · advisory assistants &amp; suitability (WM) · underwriting &amp; claims triage (INS)</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ================= BUILDING BLOCKS ================= -->
+  <section id="blocks" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--gold)"></span><h2>Architecture Building Blocks</h2><span class="range">ABB catalog · vendor-neutral</span></div>
+    <p class="phase-intro">Each block is described by purpose, capabilities, and the principles it realizes. Indicative realizations are illustrative only — the architecture is deliberately platform-agnostic (e.g., an AI service layer could be realized with Azure AI Foundry, the Claude API, or equivalent platforms behind the same control plane).</p>
+
+    <div class="bb l-teal">
+      <div class="bb-head"><span class="lyr">L1</span><h3>Governed Data Boundary</h3><span class="prins">realizes FS-AI-09</span></div>
+      <div class="bb-body">
+        <p>The perimeter inside which all AI data processing occurs. Nothing classified as client, account, policy, MNPI, or proprietary leaves it toward unapproved services.</p>
+        <ul>
+          <li>Data classification and entitlement enforcement at every AI access path</li>
+          <li>DLP policies specific to AI endpoints (prompt and file inspection)</li>
+          <li>MNPI / information-barrier zoning; residency-aware deployment zones</li>
+          <li>Vendor controls: no-train clauses verified, segregation, deletion rights</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> approved-service catalog exists; DLP rules tested; vendor attestations on file.</div>
+      </div>
+    </div>
+
+    <div class="bb l-teal">
+      <div class="bb-head"><span class="lyr">L2</span><h3>Knowledge &amp; Grounding Services</h3><span class="prins">realizes FS-AI-10</span></div>
+      <div class="bb-body">
+        <p>The only sources client-facing and decision-supporting AI may speak from: owned, current, and citable.</p>
+        <ul>
+          <li>Governed repositories (filed policies, approved research, product data) with named owners</li>
+          <li>Retrieval index with access control inherited from source entitlements</li>
+          <li>Citation service attaching sources to generated outputs</li>
+          <li>Freshness SLAs; stale content flagged or excluded from retrieval</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> knowledge owners assigned; hallucination test results in validation pack.</div>
+      </div>
+    </div>
+
+    <div class="bb l-crim">
+      <div class="bb-head"><span class="lyr">L3</span><h3>Independent AI Control Plane</h3><span class="prins">realizes FS-AI-08 · 12 · 13</span></div>
+      <div class="bb-body">
+        <p>The architectural heart of the design: limits, gates, and shutdown live here, outside the reach of any model or agent. A model can propose; only the control plane permits.</p>
+        <ul>
+          <li>Policy gateway and guardrails on every AI request/response path</li>
+          <li>Confidence-based routing: low-certainty cases go to humans by design</li>
+          <li>Pre-trade risk limits, throttles, and tested kill switches (CM overlay)</li>
+          <li>Compliance gates wired into promotion pipelines; safe-fallback orchestration on failure</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> kill switch test evidence; fallback runbook per workflow; gate bypass impossible by construction.</div>
+      </div>
+    </div>
+
+    <div class="bb l-steel">
+      <div class="bb-head"><span class="lyr">L4</span><h3>AI Services Layer</h3><span class="prins">realizes FS-AI-03 · 05</span></div>
+      <div class="bb-body">
+        <p>The models and assistants themselves — all of them registered, tiered, and validated before this layer serves anything real.</p>
+        <ul>
+          <li>GenAI assistants (RAG pattern by default), predictive models, recommendation engines, agentic workflows</li>
+          <li>Explainability services producing reason codes / key factors for adverse decisions</li>
+          <li>Every service bound to an inventory entry, owner, and tier</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> inventory completeness; validation report matching tier; explainability output samples.</div>
+      </div>
+    </div>
+
+    <div class="bb l-gold">
+      <div class="bb-head"><span class="lyr">L5</span><h3>Human Oversight &amp; Licensed Review</h3><span class="prins">realizes FS-AI-02 · 04 · 05</span></div>
+      <div class="bb-body">
+        <p>The layer that keeps accountability human. Advice, adverse decisions, and judgment calls pass through here before they touch a client.</p>
+        <ul>
+          <li>Licensed approval workflows: AI drafts, humans adopt and own</li>
+          <li>Escalation queues fed by confidence routing and client-risk triggers</li>
+          <li>Four-eyes checks for high-impact decisions; suitability constraints applied upstream of recommendation display</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> supervision procedures reference AI flows; approval audit trail joins the lineage service.</div>
+      </div>
+    </div>
+
+    <div class="bb l-ink">
+      <div class="bb-head"><span class="lyr">L6</span><h3>Experience &amp; Channels</h3><span class="prins">constrained by FS-AI-02 · 10</span></div>
+      <div class="bb-body">
+        <p>Where users meet the system. Channels render AI output with its provenance and its limits made visible.</p>
+        <ul>
+          <li>Advisor workspace, client portal/chatbot, trader desktop, claims workbench, producer portal</li>
+          <li>Standardized AI labeling and disclosures; citations rendered with content</li>
+          <li>No channel talks to models directly — all traffic transits the control plane</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> disclosure copy approved by Compliance; channel-to-model direct paths do not exist.</div>
+      </div>
+    </div>
+
+    <div class="bb l-gold">
+      <div class="bb-head"><span class="lyr">X-Cut</span><h3>Records &amp; Lineage Services</h3><span class="prins">realizes FS-AI-06 · 11</span></div>
+      <div class="bb-body">
+        <p>Shared, cross-cutting capture of every decision and every version, replayable years later.</p>
+        <ul>
+          <li>Decision logging standard: inputs, data versions, model/prompt versions, output, human action</li>
+          <li>Model/prompt version registry; vendor model versions pinned and recorded</li>
+          <li>Immutable archive aligned to retention schedules; reconstruction API tested in audits</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> a sampled past decision is successfully reconstructed end-to-end.</div>
+      </div>
+    </div>
+
+    <div class="bb l-steel">
+      <div class="bb-head"><span class="lyr">X-Cut</span><h3>Observability &amp; Assurance Services</h3><span class="prins">realizes FS-AI-07 · 14</span></div>
+      <div class="bb-body">
+        <p>Cross-cutting telemetry turning operation into assurance: performance, drift, fairness, anomalies.</p>
+        <ul>
+          <li>Per-model dashboards: volume, automation rate, escalation rate, error rate</li>
+          <li>Data/concept drift detection with thresholds set at validation time</li>
+          <li>Production fairness monitoring for in-scope models; surveillance feeds for AI-driven flow</li>
+          <li>Alert → review → restrict → retrain → retire playbook</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> thresholds documented; a drift alert drill has been executed.</div>
+      </div>
+    </div>
+
+    <div class="bb l-ink">
+      <div class="bb-head"><span class="lyr">Plane</span><h3>Governance Plane</h3><span class="prins">realizes FS-AI-01 · 05 · 08 · 11</span></div>
+      <div class="bb-body">
+        <p>The operating model wrapped around everything: who owns, who validates, who approves, who changes.</p>
+        <ul>
+          <li>ARB gates at intake, design, go-live, and material change</li>
+          <li>Model inventory and tiering; independent validation function with restriction authority</li>
+          <li>Change management covering models, prompts, agents, and vendor updates</li>
+        </ul>
+        <div class="ex"><b>ARB checks:</b> the governance plane is itself audited — gate records, waiver registry with expiry dates.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRACEABILITY ================= -->
+  <section id="trace" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--crim)"></span><h2>Principle → Architecture Traceability</h2><span class="range">FS-AI-01 — 14</span></div>
+    <p class="phase-intro">Every principle is realized by named building blocks, and every block exists because a principle demands it. This matrix is the compliance backbone: ARB reviews walk it row by row. Four representative rows are published here.</p>
+    <table>
+      <thead><tr><th>Principle</th><th>Primary building blocks</th><th>Verification evidence (what the ARB asks for)</th></tr></thead>
+      <tbody>
+        <tr><td class="ref">FS-AI-02</td><td>Human Oversight Layer — licensed approval workflow</td><td>Workflow evidence that advice-adjacent output cannot reach clients unapproved.</td></tr>
+        <tr><td class="ref">FS-AI-06</td><td>Records &amp; Lineage Services — decision logs, immutable archive</td><td>Successful reconstruction of a sampled historical decision.</td></tr>
+        <tr><td class="ref">FS-AI-07</td><td>Observability Services — fairness monitoring; Validation — bias testing</td><td>Pre-deployment disparate-impact analysis; production fairness dashboard.</td></tr>
+        <tr><td class="ref">FS-AI-13</td><td>Control Plane — pre-trade limits, throttles, kill switch (CM)</td><td>Kill-switch test log; limits enforced outside model reach by design review.</td></tr>
+        <tr><td class="ref" style="color:var(--muted)">+10</td><td colspan="2" style="color:var(--muted)">Sample rows shown. The complete 14-row matrix — every principle mapped to its building blocks and the specific ARB verification evidence — is part of the full edition, <b style="color:var(--gold)">available on request</b>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ================= SECTOR FLOWS ================= -->
+  <section id="flows" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--steel)"></span><h2>Sector Lifecycle Flows</h2><span class="range">Sequence views · principles in action</span></div>
+    <p class="phase-intro">The architecture specializes per sector. The wealth-management advice lifecycle is published below as the worked example. Bracketed references mark where each FS-AI principle does its work.</p>
+
+    <div class="svg-wrap">
+      <h5>Wealth Management — AI-assisted advice lifecycle</h5>
+      <svg viewBox="0 0 1040 360" width="100%" role="img" aria-label="Sequence: client, advisor, AI assistant, suitability engine, surveillance and records">
+        <g font-size="11.5" text-anchor="middle" font-weight="700">
+          <rect x="20" y="12" width="110" height="32" rx="8" fill="#171c22" stroke="#46525c"/><text x="75" y="33" fill="#ecefe9">Client</text>
+          <rect x="190" y="12" width="120" height="32" rx="8" fill="#241c0d" stroke="#6e5a26"/><text x="250" y="33" fill="#ecd391">Advisor</text>
+          <rect x="380" y="12" width="130" height="32" rx="8" fill="#141c2a" stroke="#3c4f70"/><text x="445" y="33" fill="#bccde8">AI Assistant</text>
+          <rect x="580" y="12" width="150" height="32" rx="8" fill="#0e2220" stroke="#2b5f59"/><text x="655" y="33" fill="#a4ddd6">Suitability Engine</text>
+          <rect x="790" y="12" width="235" height="32" rx="8" fill="#26130f" stroke="#73362e"/><text x="907" y="33" fill="#efb0a8">Surveillance + Records</text>
+        </g>
+        <g stroke="#2a3138" stroke-width="1.3" stroke-dasharray="4 5">
+          <line x1="75" y1="44" x2="75" y2="335"/><line x1="250" y1="44" x2="250" y2="335"/><line x1="445" y1="44" x2="445" y2="335"/>
+          <line x1="655" y1="44" x2="655" y2="335"/><line x1="907" y1="44" x2="907" y2="335"/>
+        </g>
+        <defs><marker id="wma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#98a2a8"/></marker></defs>
+        <g stroke="#98a2a8" stroke-width="1.4" fill="none">
+          <line x1="75" y1="75" x2="246" y2="75" marker-end="url(#wma)"/>
+          <line x1="250" y1="112" x2="441" y2="112" marker-end="url(#wma)"/>
+          <line x1="445" y1="149" x2="651" y2="149" marker-end="url(#wma)"/>
+          <line x1="655" y1="184" x2="449" y2="184" marker-end="url(#wma)"/>
+          <line x1="445" y1="219" x2="254" y2="219" marker-end="url(#wma)"/>
+          <line x1="250" y1="262" x2="79" y2="262" marker-end="url(#wma)"/>
+          <line x1="250" y1="298" x2="903" y2="298" marker-end="url(#wma)"/>
+        </g>
+        <g font-size="11" fill="#c8cdc9" text-anchor="middle">
+          <text x="160" y="67">1 · goals &amp; request</text>
+          <text x="345" y="104">2 · draft proposal request</text>
+          <text x="548" y="141" fill="#4fb3a9">3 · constrain to suitable universe [04]</text>
+          <text x="552" y="176">4 · eligible products only</text>
+          <text x="350" y="211" fill="#7e9cc9">5 · grounded draft + citations [09·10]</text>
+          <text x="160" y="252" fill="#d4a843">6 · advisor reviews, edits,</text>
+          <text x="160" y="266" fill="#d4a843">presents as own advice [02]</text>
+          <text x="575" y="290" fill="#d4685e">7 · communication surveilled &amp; lineage archived [06·08]</text>
+        </g>
+        <text x="520" y="345" fill="#98a2a8" font-size="10.5" text-anchor="middle">Assistant unavailable or low confidence → advisor proceeds manually [12]; recommendation reconstruction available for exams [06]; prompt versions logged [11]</text>
+      </svg>
+    </div>
+    <div class="callout"><h4>Capital Markets &amp; Insurance flows</h4><p>The trade-lifecycle sequence (pre-trade limits, throttles, kill-switch path) and the claims-lifecycle sequence (confidence-routed triage, straight-through vs. adjuster split, reason codes) follow the same architecture with sector overlays. Both walkthroughs are part of the full edition — <b>available on request</b>, and best explored live: happy to walk through how the architecture specializes for your trading floor or claims operation.</p></div>
+  </section>
+
+  <!-- ================= ADOPTION ================= -->
+  <section id="adopt" class="panel">
+    <div class="phase-head"><span class="dot" style="background:var(--gold)"></span><h2>Adoption &amp; Roadmap</h2><span class="range">5W &amp; 1H · phased build</span></div>
+    <p class="phase-intro">How an institution adopts this reference architecture — and the order in which to build it, since the cross-cutting services and boundary must exist before AI services scale.</p>
+
+    <div class="roadmap">
+      <div class="phase-card"><b>Phase 1 · Foundations</b><h6>Boundary + Cross-Cutting Services first</h6><p>Stand up the governed data boundary (L1), records/lineage and observability cross-cutting services. Establish the model inventory and ARB gates. Nothing client-facing yet — this is what makes everything later defensible.</p></div>
+      <div class="phase-card"><b>Phase 2 · Controlled Value</b><h6>Control plane + first use cases</h6><p>Deploy the independent control plane (L3) and human oversight workflows (L5). Launch internal, human-in-the-loop use cases per sector (advisor assistant, claims triage, pre-trade analytics) as governed pilots.</p></div>
+      <div class="phase-card"><b>Phase 3 · Scale &amp; Specialize</b><h6>Sector overlays + automation depth</h6><p>Add sector overlays (execution limits, suitability constraints, straight-through claims), expand confidence-routed automation, and operationalize the drift/fairness playbooks at portfolio scale.</p></div>
+    </div>
+
+    <table>
+      <thead><tr><th style="width:80px">Question</th><th>Answer</th><th>Real-world example</th></tr></thead>
+      <tbody>
+        <tr><td class="ref">Why</td><td>To give every AI initiative a pre-approved structural pattern, so teams inherit compliance instead of reinventing it per project.</td><td>A new underwriting model team plugs into existing boundary, cross-cutting services, and gates — weeks saved, findings avoided.</td></tr>
+        <tr><td class="ref">What</td><td>A layered reference architecture (FS-AI-RA-001): six layers, two cross-cutting services, one governance plane, traceable to FS-AI-PRIN 01–14.</td><td>Solution architectures show their deltas against this reference, not blank-page designs.</td></tr>
+        <tr><td class="ref">Who</td><td>EA owns the reference; platform teams own the cross-cutting services and control plane; line-of-business teams own L4–L6 overlays within the pattern.</td><td>The control plane is a shared service with its own owner — no desk runs a private kill switch.</td></tr>
+        <tr><td class="ref">When</td><td>Applied at solution design for every AI initiative; reviewed annually and on major regulatory or platform change.</td><td>A new algo-trading AI rule update triggers a control-plane (L3) capability review.</td></tr>
+        <tr><td class="ref">Where</td><td>Maintained in the EA repository beside the principles catalog; realized on the institution's approved cloud/AI platforms.</td><td>Same logical architecture realized on Azure AI Foundry in one firm and on an equivalent stack in another.</td></tr>
+        <tr><td class="ref">How</td><td>Via conformance review: each solution maps its components to the reference layers and walks the traceability matrix; deviations need ADRs and ARB approval.</td><td>ADR-051 documents why a vendor claims platform's embedded AI is wrapped, not bypassed, by the control plane.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="footnote"><b>Note:</b> This reference architecture is an original companion to the FS-AI principles catalog and is intentionally vendor-neutral; product names appear only as illustrative realizations. Regulatory applicability must be confirmed with Compliance and Legal per jurisdiction and charter.</p>
+
+    <div class="quote">“Teams shouldn't have to be brave to use AI safely — the architecture should make the <span>safe path the easy path.</span>”</div>
+  </section>
+
+</div>
+<script>
+  const btns=document.querySelectorAll('.tab-btn'),panels=document.querySelectorAll('.panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+  }));
+</script>
+</body>
+</html>

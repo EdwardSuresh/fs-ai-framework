@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FS-AI Principles — One-Page Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101418; --panel:#171c22; --panel-2:#13171c;
+    --ink:#ecefe9; --muted:#98a2a8; --line:#2a3138;
+    --gold:#d4a843;   --gold-bg:#241c0d;   --gold-line:#6e5a26;
+    --crim:#d4685e;   --crim-bg:#26130f;   --crim-line:#73362e;
+    --teal:#4fb3a9;   --teal-bg:#0e2220;   --teal-line:#2b5f59;
+    --steel:#7e9cc9;  --steel-bg:#141c2a;  --steel-line:#3c4f70;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;padding:30px 16px 56px}
+  .wrap{max-width:1100px;margin:0 auto}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-align:center}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(21px,3.2vw,32px);text-align:center;margin:8px 0 18px}
+
+  .map-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .map-trap{max-width:320px;border:1px solid var(--crim-line);background:var(--crim-bg);border-radius:10px;padding:10px 13px;font-size:12.5px;color:#d9cdc8}
+  .map-trap b{color:var(--crim);font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px}
+  .map-legend{border:1px dashed var(--line);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--muted);display:grid;gap:5px}
+  .map-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+  .map-banner{display:block;width:max-content;max-width:100%;margin:0 auto 18px;padding:6px 18px;border:1px solid var(--gold-line);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#ecd391;background:var(--panel-2);text-align:center}
+
+  .map-row{display:grid;grid-template-columns:repeat(4,1fr) 178px;gap:10px;margin-bottom:12px;align-items:stretch}
+  .map-row.cols3{grid-template-columns:repeat(3,1fr) 178px}
+  .row-label{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:2px 0 0}
+  .mini{border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:var(--panel)}
+  .mini .num{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:10px;display:inline-block;padding:1px 7px;border-radius:5px;margin-bottom:6px}
+  .mini h5{font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:5px;line-height:1.3}
+  .mini p{font-size:11.5px;color:#b9c0bb;line-height:1.45}
+  .c-gold{background:var(--gold-bg);border-color:var(--gold-line)} .c-gold .num{background:rgba(212,168,67,.16);color:var(--gold)} .c-gold h5{color:#ecd391}
+  .c-crim{background:var(--crim-bg);border-color:var(--crim-line)} .c-crim .num{background:rgba(212,104,94,.16);color:var(--crim)} .c-crim h5{color:#efb0a8}
+  .c-teal{background:var(--teal-bg);border-color:var(--teal-line)} .c-teal .num{background:rgba(79,179,169,.16);color:var(--teal)} .c-teal h5{color:#a4ddd6}
+  .c-steel{background:var(--steel-bg);border-color:var(--steel-line)} .c-steel .num{background:rgba(126,156,201,.16);color:var(--steel)} .c-steel h5{color:#bccde8}
+
+  .side-note{border-radius:11px;padding:11px 12px;font-size:11.5px;border:1px solid;line-height:1.45;color:#c8cdc9}
+  .side-note b{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:5px}
+  .sn-gold{background:var(--gold-bg);border-color:var(--gold-line)} .sn-gold b{color:var(--gold)}
+  .sn-crim{background:var(--crim-bg);border-color:var(--crim-line)} .sn-crim b{color:var(--crim)}
+  .sn-teal{background:var(--teal-bg);border-color:var(--teal-line)} .sn-teal b{color:var(--teal)}
+  .sn-steel{background:var(--steel-bg);border-color:var(--steel-line)} .sn-steel b{color:var(--steel)}
+
+  .system-core{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+  .system-core::before,.system-core::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+  .system-core span{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.18em;color:var(--bg);background:var(--gold);border-radius:999px;padding:7px 18px;text-align:center}
+  .system-core small{display:block;font-weight:400;letter-spacing:.08em;font-size:8.5px;text-transform:uppercase}
+
+  .map-lifecycle{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2);padding:14px 14px 12px}
+  .map-lifecycle h6{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:12px}
+  .lc-strip{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:6px}
+  .lc-chip{border-radius:9px;border:1px solid;padding:7px 11px;text-align:center;min-width:108px}
+  .lc-chip b{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em}
+  .lc-chip span{font-size:10px;color:var(--muted)}
+  .lc-arrow{align-self:center;color:var(--muted);font-size:13px}
+  .lc-gold{background:var(--gold-bg);border-color:var(--gold-line)} .lc-gold b{color:#ecd391}
+  .lc-crim{background:var(--crim-bg);border-color:var(--crim-line)} .lc-crim b{color:#efb0a8}
+  .lc-teal{background:var(--teal-bg);border-color:var(--teal-line)} .lc-teal b{color:#a4ddd6}
+  .lc-steel{background:var(--steel-bg);border-color:var(--steel-line)} .lc-steel b{color:#bccde8}
+
+  .map-quote{margin-top:16px;text-align:center;font-family:'Fraunces',serif;font-size:clamp(13px,1.9vw,16.5px);font-weight:600;color:#efe6d2;padding:14px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+  .map-quote span{color:var(--gold)}
+  .credit{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
+
+  @media (max-width:900px){.map-row,.map-row.cols3{grid-template-columns:repeat(2,1fr)}.map-row .side-note{grid-column:1/-1}}
+  @media (max-width:540px){.map-row,.map-row.cols3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">FS-AI-PRIN-CAT-001 · One-Page Map</div>
+  <h1>AI Architecture Principles — Capital Markets · Wealth Management · Insurance</h1>
+
+  <div class="map-top">
+    <div class="map-trap"><b>⚠ The Pitfall</b>Deploying AI capability before control. Speed is not safety, and a demo is not a production system.</div>
+    <div class="map-legend">
+      <span><i style="background:var(--gold)"></i>Trust &amp; Accountability · 01–04</span>
+      <span><i style="background:var(--crim)"></i>Risk &amp; Compliance · 05–08</span>
+      <span><i style="background:var(--teal)"></i>Data &amp; Model Integrity · 09–11</span>
+      <span><i style="background:var(--steel)"></i>Resilience &amp; Market Integrity · 12–14</span>
+    </div>
+  </div>
+
+  <span class="map-banner">Built for the Client · Defensible by Design</span>
+
+  <div class="map-row">
+    <div class="row-label">Row 1 — Trust &amp; Accountability</div>
+    <div class="mini c-gold"><span class="num">01</span><h5>Accountable Human Ownership</h5><p>Every AI system has a named business owner and model owner. Accountability stays with humans — "the model did it" is not a defense.</p></div>
+    <div class="mini c-gold"><span class="num">02</span><h5>Licensed Advice Boundary</h5><p>No AI output becomes client advice until a licensed professional reviews and adopts it. AI cannot hold a license or owe a duty.</p></div>
+    <div class="mini c-gold"><span class="num">03</span><h5>Explainability Proportional to Impact</h5><p>Underwriting, pricing, claims, and credit decisions must be explainable — plainly to clients, technically to regulators. Where the law demands a reason, an unexplainable model is unusable.</p></div>
+    <div class="mini c-gold"><span class="num">04</span><h5>Client Best Interest by Design</h5><p>Best-interest and suitability live inside the optimization objective, not in post-hoc checks. An optimizer pursues exactly what it is told to maximize.</p></div>
+    <div class="side-note sn-gold"><b>✦ The Reframe</b>The question that matters is not what AI can do — it is what the institution can stand behind.</div>
+  </div>
+
+  <div class="map-row">
+    <div class="row-label">Row 2 — Risk &amp; Compliance</div>
+    <div class="mini c-crim"><span class="num">05</span><h5>Model Risk Management for All AI</h5><p>Every model — GenAI, agents, vendor-embedded AI — is inventoried, risk-tiered, and independently validated before and during use.</p></div>
+    <div class="mini c-crim"><span class="num">06</span><h5>Regulatory Traceability</h5><p>Every AI-influenced decision is reconstructable end-to-end: data, model and prompt versions, output, human action — retained per books-and-records.</p></div>
+    <div class="mini c-crim"><span class="num">07</span><h5>Fairness Before &amp; After Deployment</h5><p>Underwriting, pricing, and claims models are tested for disparate impact and proxy discrimination pre-deployment — and monitored in production.</p></div>
+    <div class="mini c-crim"><span class="num">08</span><h5>Compliance Gates Precede Capability</h5><p>No AI reaches production without compliance, legal, and risk gates. Surveillance and supervision extend to AI-generated content and actions.</p></div>
+    <div class="side-note sn-crim"><b>⚖ The Gate</b>Capability never precedes compliance.<br>Validated. Gated. Then live.</div>
+  </div>
+
+  <div class="system-core"><span>CONTROL PLANE<small>core · enforced outside model reach</small></span></div>
+
+  <div class="map-row cols3">
+    <div class="row-label">Row 3 — Data &amp; Model Integrity</div>
+    <div class="mini c-teal"><span class="num">09</span><h5>Data Sovereignty &amp; Confidentiality</h5><p>Client PII, policy data, and MNPI are processed only inside governed boundaries. No firm data feeds unapproved external models — and vendors never train on it.</p></div>
+    <div class="mini c-teal"><span class="num">10</span><h5>Grounded, Approved Knowledge Only</h5><p>Client-facing outputs are grounded in approved, current, citable sources. Ungrounded generation is never presented as fact — a hallucinated figure is a misrepresentation.</p></div>
+    <div class="mini c-teal"><span class="num">11</span><h5>Model &amp; Prompt Change Control</h5><p>Models, prompts, and agents are versioned and promoted through change control. No silent change reaches production — including vendor model updates.</p></div>
+    <div class="side-note sn-teal"><b>◈ The Boundary</b>Data never leaves governance.<br>Grounded. Versioned. Citable.</div>
+  </div>
+
+  <div class="map-row cols3">
+    <div class="row-label">Row 4 — Resilience &amp; Market Integrity</div>
+    <div class="mini c-steel"><span class="num">12</span><h5>Fail to Safe, Fail to Human</h5><p>Failure or low confidence falls back to humans, manual process, or conservative defaults. Silent failure is prohibited — an outage must never become a conduct incident.</p></div>
+    <div class="mini c-steel"><span class="num">13</span><h5>Market Integrity &amp; Autonomy Limits</h5><p>Trading AI operates inside hard limits — pre-trade controls, throttles, tested kill switches — enforced in a control layer outside the model's reach.</p></div>
+    <div class="mini c-steel"><span class="num">14</span><h5>Continuous Monitoring &amp; Drift Response</h5><p>Production AI is watched for performance, drift, and anomalies — with thresholds that trigger review, restriction, retraining, or retirement.</p></div>
+    <div class="side-note sn-steel"><b>⟳ The Operating Truth</b>Failures are certain; incidents are optional.<br>The safe path must be the easy path.</div>
+  </div>
+
+  <div class="map-lifecycle">
+    <h6>The AI Governance Lifecycle</h6>
+    <div class="lc-strip">
+      <div class="lc-chip lc-gold"><b>INTAKE</b><span>Name owner &amp; objective</span></div><span class="lc-arrow">→</span>
+      <div class="lc-chip lc-crim"><b>TIER</b><span>Inventory &amp; materiality</span></div><span class="lc-arrow">→</span>
+      <div class="lc-chip lc-crim"><b>VALIDATE</b><span>Fairness · grounding</span></div><span class="lc-arrow">→</span>
+      <div class="lc-chip lc-gold"><b>GATE</b><span>Compliance · legal</span></div><span class="lc-arrow">→</span>
+      <div class="lc-chip lc-teal"><b>PILOT</b><span>Controlled scope</span></div><span class="lc-arrow">→</span>
+      <div class="lc-chip lc-steel"><b>OPERATE</b><span>Monitor · drift · retire</span></div>
+    </div>
+  </div>
+
+  <div class="map-quote">"Govern the model like a trader, document it like a record, and design it to withstand scrutiny — <span>because one day it will face it.</span>"</div>
+  <div class="credit">FS-AI Principles · Trust → Risk → Data → Resilience · Companion: FS-AI-RA-001 Reference Architecture</div>
+
+</div>
+</body>
+</html>
